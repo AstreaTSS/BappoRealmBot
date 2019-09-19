@@ -81,7 +81,7 @@ async def on_raw_reaction_add(payload):
         if emoji_name == u"\U0001F501":
             user_and_key[payload.user_id] = ""
 
-        print(user_and_key[payload.user_id])
+        # print(user_and_key[payload.user_id])
 
         if user_and_key[payload.user_id] == os.environ.get("KEY_CODE"):
             member = message.guild.get_member(payload.user_id)
