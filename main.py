@@ -96,6 +96,8 @@ async def on_raw_reaction_add(payload):
     if payload.channel_id == rules_id:
         await message.remove_reaction(payload.emoji.name, user)
 
+bot.remove_command("help")
+
 @bot.event
 async def on_ready():
     print('Logged in as')
