@@ -93,7 +93,8 @@ async def on_raw_reaction_add(payload):
             del user_and_key[payload.user_id]
             to_be_verified_users.remove(payload.user_id)
 
-    await message.remove_reaction(payload.emoji.name, user)
+    if payload.channel_id == rules_id:
+        await message.remove_reaction(payload.emoji.name, user)
 
 @bot.event
 async def on_ready():
