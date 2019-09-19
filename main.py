@@ -86,8 +86,10 @@ async def on_raw_reaction_add(payload):
         if user_and_key[payload.user_id] == os.environ.get("KEY_CODE"):
             member = message.guild.get_member(payload.user_id)
             to_be_verified = discord.utils.get(member.guild.roles, name='To Be Verified')
+            member_role = discord.utils.get(member.guild.roles, name='Member')
 
             await member.remove_roles(to_be_verified)
+            await member.add_roles(member_role)
             del user_and_key[payload.user_id]
             to_be_verified_users.remove(payload.user_id)
 
