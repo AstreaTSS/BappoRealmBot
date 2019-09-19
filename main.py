@@ -66,12 +66,11 @@ async def on_raw_reaction_add(payload):
     global rules_id
     global user_and_key
 
+    user = bot.get_user(payload.user_id)
+    rules = bot.get_channel(payload.channel_id)
     message = await rules.fetch_message(payload.message_id)
 
     if payload.user_id in to_be_verified_users and payload.channel_id == rules_id:
-        user = bot.get_user(payload.user_id)
-        rules = bot.get_channel(payload.channel_id)
-
         emoji_name = payload.emoji.name.replace(u"\u20E3", "")
 
         if payload.user_id in user_and_key:
