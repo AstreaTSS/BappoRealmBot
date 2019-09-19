@@ -39,8 +39,8 @@ async def season_add(ctx):
 async def on_member_join(member):
     global to_be_verified_users
 
-    to_be_verified = discord.utils.get(member.guild.roles, name='To Be Verified')
-    await member.add_roles(to_be_verified)
+    # to_be_verified = discord.utils.get(member.guild.roles, name='To Be Verified')
+    # await member.add_roles(to_be_verified)
 
     rules = discord.utils.get(member.guild.channels, name='rules')
 
@@ -48,8 +48,8 @@ async def on_member_join(member):
     await welcome_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
     "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
     "look in " + rules.mention + " and find a code. Once you have the code, enter the code into the reactions " +
-    "at the bottom of rules and input the code like a keypad. Once you enter the code, wait a few seconds, and " +
-    "you should be in. If you mess up, press the repeat button.")
+    "at the bottom of rules and input the code like a keypad (don't go too fast). Once you enter the code, " +
+    "wait a few seconds, and you should be in. If you mess up, press the repeat button.")
 
     to_be_verified_users.append(member.id)
 
