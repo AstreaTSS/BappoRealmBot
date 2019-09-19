@@ -5,7 +5,7 @@ bot = commands.Bot(command_prefix='!?')
 
 to_be_verified_users = []
 user_and_key = {}
-rules_id = 623677414278561793 # testing - not Bappo Realm rules id
+rules_id = 596186061697450015
 
 @bot.command()
 async def ping(ctx):
@@ -103,4 +103,4 @@ async def on_ready():
     activity = discord.Activity(name = 'over Bappo\'s Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
 
-bot.run(os.environ.get("TEST_TOKEN"))
+bot.run(os.environ.get("MAIN_TOKEN"))
