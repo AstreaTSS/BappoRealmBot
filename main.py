@@ -47,8 +47,8 @@ async def on_member_join(member):
     else:
         mod_role = discord.utils.get(member.guild.roles, name='Moderator')
 
-        welcome_channel = discord.utils.get(member.guild.channels, name='welcome')
-        await welcome_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
+        verify_channel = discord.utils.get(member.guild.channels, name='verify')
+        await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
         "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
         "wait for a " + mod_role.mention + " to come on and ask you some questions. Nothing big, of course.")
 
