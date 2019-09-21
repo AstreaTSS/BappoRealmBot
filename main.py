@@ -34,6 +34,9 @@ async def season_add(ctx, season, message_id):
 @bot.event
 async def on_member_join(member):
 
+    if member.bot:
+        pass
+
     current_time = datetime.datetime.utcnow().timestamp()
 
     if (current_time - member.created_at.timestamp()) <= 604800:
