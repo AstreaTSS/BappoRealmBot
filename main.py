@@ -3,12 +3,24 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix='!?')
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f"Pong! {bot.latency}")
+def is_mod_or_up(ctx):
+    mod_role = discord.utils.get(ctx.guild.roles, name='Moderator')
+    owner_role = discord.utils.get(ctx.guild.roles, name='Owner')
+
+    member_roles = ctx.author.roles
+
+    if mod_role in member_roles or owner_role in member_roles:
+        return True
+    return False
 
 @bot.command()
-@commands.is_owner()
+async def ping(ctx):
+    ping = round((bot.latency * 1000), 2)
+
+    await ctx.send(f"Pong! `{ping}` ms")
+
+@bot.command()
+@commands.check(is_mod_or_up)
 async def season_add(ctx, season, message_id):
     ori_mess = await ctx.guild.get_channel(596186025630498846).fetch_message(int(message_id))
     ori_timestamp = ori_mess.created_at.timestamp()
@@ -27,8 +39,7 @@ async def season_add(ctx, season, message_id):
         await vet.add_roles(season_x_role)
         print("Added " + vet.display_name)
 
-    await ctx.send("Done!")
-    print("\nDone! Added " + str(len(season_x_vets)) + " members!")
+    await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
 
 
 @bot.event
