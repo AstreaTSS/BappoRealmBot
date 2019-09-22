@@ -1,6 +1,6 @@
 # Bappo Realm Bot
 
-![Bappo Realm Bot Logo](https://cdn.discordapp.com/avatars/618993974048194560/fb9d37300b38181fecace707b1db099e.png?size=256)
+![Bappo Realm Bot Logo](https://cdn.discordapp.com/avatars/618993974048194560/73901c95dd92c92589e84fbb425040c8.png?size=256)
 
 The Bappo Realm Bot, as you can imagine, is for the [Bappo Realm discord server](https://discord.gg/Aqpz3Nv "The Discord Server"), with it right now mainly being used to aid with verification.
 
