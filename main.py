@@ -45,31 +45,29 @@ async def season_add(ctx, season, message_id):
 @bot.event
 async def on_member_join(member):
 
-    if member.bot:
-        pass
+    if not member.bot:
+        current_time = datetime.datetime.utcnow().timestamp()
 
-    current_time = datetime.datetime.utcnow().timestamp()
+        if (current_time - member.created_at.timestamp()) <= 604800:
+            try:
+                await member.send("Your account is too young to join the Bappo Realm Discord server. Try "
+                "again once your discord account is 7 days old.")
+            except discord.Forbidden:
+                print(member.display_name + " blocked DMs.")
 
-    if (current_time - member.created_at.timestamp()) <= 604800:
-        try:
-            await member.send("Your account is too young to join the Bappo Realm Discord server. Try "
-            "again once your discord account is 7 days old.")
-        except discord.Forbidden:
-            print(member.display_name + " blocked DMs.")
+            await member.kick(reason="Too young account to join Bappo")
+        else:
+            mod_role = discord.utils.get(member.guild.roles, name='Moderator')
 
-        await member.kick(reason="Too young account to join Bappo")
-    else:
-        mod_role = discord.utils.get(member.guild.roles, name='Moderator')
+            verify_channel = discord.utils.get(member.guild.channels, name='verify')
 
-        verify_channel = discord.utils.get(member.guild.channels, name='verify')
-
-        await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
-        "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
-        "check out the questions below and answer them. A " + mod_role.mention + " will review them and verify you.\n\n" +
-        "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (via advertising links, friends, etc)?" +
-        "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
-        "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
-        "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n```")
+            await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
+            "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
+            "check out the questions below and answer them. A " + mod_role.mention + " will review them and verify you.\n\n" +
+            "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (via advertising links, friends, etc)?" +
+            "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
+            "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
+            "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n```")
 
 @bot.event
 async def on_ready():
