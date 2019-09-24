@@ -62,9 +62,14 @@ async def on_member_join(member):
         mod_role = discord.utils.get(member.guild.roles, name='Moderator')
 
         verify_channel = discord.utils.get(member.guild.channels, name='verify')
+
         await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
         "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
-        "wait for a " + mod_role.mention + " to come on and ask you some questions. Nothing big, of course.")
+        "check out the questions below and answer them. A " + mod_role.mention + " will review them and verify you.\n\n" +
+        "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (via advertising links, friends, etc)?" +
+        "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
+        "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
+        "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n```")
 
 @bot.event
 async def on_ready():
