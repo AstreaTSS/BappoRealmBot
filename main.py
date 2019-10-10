@@ -21,7 +21,7 @@ async def ping(ctx):
     ping_discord = round((bot.latency * 1000), 2)
     ping_personal = round((current_time - mes_time) * 1000, 2)
 
-    await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n{ping_personal} ms personally (not accurate)")
+    await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n`{ping_personal}` ms personally (not accurate)")
 
 @bot.command()
 @commands.check(is_mod_or_up)
