@@ -15,9 +15,13 @@ def is_mod_or_up(ctx):
 
 @bot.command()
 async def ping(ctx):
-    ping = round((bot.latency * 1000), 2)
+    current_time = datetime.datetime.utcnow().timestamp()
+    mes_time = ctx.created_at
 
-    await ctx.send(f"Pong! `{ping}` ms")
+    ping_discord = round((bot.latency * 1000), 2)
+    ping_personal = round((current_time - mes_time)/1000, 2)
+
+    await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n{ping_personal} ms personally (not accurate)")
 
 @bot.command()
 @commands.check(is_mod_or_up)
@@ -68,6 +72,16 @@ async def on_member_join(member):
             "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
             "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
             "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n```")
+
+@bot.event
+async def on_message(mes):
+    if mes.channel.id == 631597319103578122 or mes.channel.id == 631327297278050348:
+        owner_role = discord.utils.get(mes.guild.roles, name='Owner')
+
+        if not owner_role in mes.author.roles:
+            mes.delete()
+
+    await bot.process_commands(mes)
 
 @bot.event
 async def on_ready():
