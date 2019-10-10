@@ -19,7 +19,7 @@ async def ping(ctx):
     mes_time = ctx.created_at
 
     ping_discord = round((bot.latency * 1000), 2)
-    ping_personal = round((current_time - mes_time)/1000, 2)
+    ping_personal = round((current_time - mes_time) * 1000, 2)
 
     await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n{ping_personal} ms personally (not accurate)")
 
