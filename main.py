@@ -79,7 +79,7 @@ async def on_message(mes):
         owner_role = discord.utils.get(mes.guild.roles, name='Owner')
 
         if not owner_role in mes.author.roles:
-            mes.delete()
+            await mes.delete()
 
     await bot.process_commands(mes)
 
