@@ -16,7 +16,7 @@ def is_mod_or_up(ctx):
 @bot.command()
 async def ping(ctx):
     current_time = datetime.datetime.utcnow().timestamp()
-    mes_time = ctx.created_at
+    mes_time = ctx.message.created_at
 
     ping_discord = round((bot.latency * 1000), 2)
     ping_personal = round((current_time - mes_time) * 1000, 2)
