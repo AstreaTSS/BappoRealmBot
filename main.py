@@ -1,6 +1,8 @@
 import discord, os, datetime
 from discord.ext import commands
 
+# I needed to
+
 bot = commands.Bot(command_prefix='!?')
 
 def is_mod_or_up(ctx):
