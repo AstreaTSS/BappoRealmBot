@@ -65,6 +65,8 @@ async def role_id(ctx, role_name):
     role = discord.utils.get(ctx.guild.roles, name=role_name)
     await ctx.send(str(role.id))
 
+bot.remove_command("help")
+
 @bot.command()
 async def help(ctx):
     await ctx.send("There is no help command, suggesting the rare cases where any of the commands are used, "
@@ -116,8 +118,6 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------\n')
-
-    bot.remove_command("help")
 
     activity = discord.Activity(name = 'over Bappo\'s Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
