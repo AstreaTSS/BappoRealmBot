@@ -4,12 +4,13 @@ from discord.ext import commands
 bot = commands.Bot(command_prefix='!?')
 
 def is_mod_or_up(ctx):
-    mod_role = discord.utils.get(ctx.guild.roles, name='Moderator')
-    owner_role = discord.utils.get(ctx.guild.roles, name='Owner')
+    mod_role = ctx.guild.get_role(596185228179931156)
+    owner_role = ctx.guild.get_role(596185339018608641)
+    second_owner = ctx.guild.get_role(641841757121675264)
 
     member_roles = ctx.author.roles
 
-    if mod_role in member_roles or owner_role in member_roles:
+    if mod_role in member_roles or owner_role in member_roles or second_owner in member_roles:
         return True
     return False
 
@@ -105,9 +106,10 @@ async def on_member_join(member):
 async def on_message(mes):
     if not mes.guild == None:
         if mes.channel.id == 638566668372541441 or mes.channel.id == 631597319103578122:
-            owner_role = discord.utils.get(mes.guild.roles, name='Owner')
+            owner_role = mes.guild.get_role(596185339018608641)
+            second_owner = mes.guild.get_role(641841757121675264)
 
-            if not owner_role in mes.author.roles:
+            if (not owner_role in mes.author.roles) or (not second_owner in mes.author.roles):
                 await mes.delete()
 
         await bot.process_commands(mes)
