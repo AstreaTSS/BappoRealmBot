@@ -26,7 +26,7 @@ async def ping(ctx):
 @bot.command()
 @commands.check(is_mod_or_up)
 async def check_stats(ctx, season):
-    season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season} Badge')
+    season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
     count = 0
     mes_of_people = "```\n"
 
@@ -46,7 +46,7 @@ async def season_add(ctx, season, message_id):
 
     guild_members = ctx.guild.members
 
-    season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season} Badge')
+    season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
 
     season_x_vets = []
 
@@ -59,6 +59,11 @@ async def season_add(ctx, season, message_id):
         print("Added " + vet.display_name)
 
     await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
+
+@bot.command()
+async def role_id(ctx, role_name):
+    role = discord.utils.get(ctx.guild.roles, name=role_name)
+    await ctx.send(str(role.id))
 
 @bot.event
 async def on_member_join(member):
