@@ -65,6 +65,11 @@ async def role_id(ctx, role_name):
     role = discord.utils.get(ctx.guild.roles, name=role_name)
     await ctx.send(str(role.id))
 
+@bot.command()
+async def help(ctx):
+    await ctx.send("There is no help command, suggesting the rare cases where any of the commands are used, "
+    "and how the owner already knows the commands.")
+
 @bot.event
 async def on_member_join(member):
 
@@ -96,13 +101,14 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(mes):
-    if mes.channel.id == 638566668372541441 or mes.channel.id == 631597319103578122:
-        owner_role = discord.utils.get(mes.guild.roles, name='Owner')
+    if not mes.guild == None:
+        if mes.channel.id == 638566668372541441 or mes.channel.id == 631597319103578122:
+            owner_role = discord.utils.get(mes.guild.roles, name='Owner')
 
-        if not owner_role in mes.author.roles:
-            await mes.delete()
+            if not owner_role in mes.author.roles:
+                await mes.delete()
 
-    await bot.process_commands(mes)
+        await bot.process_commands(mes)
 
 @bot.event
 async def on_ready():
