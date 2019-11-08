@@ -104,13 +104,14 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(mes):
-    if not mes.guild == None:
+    if not mes.guild == None and not mes.author.bot:
         if mes.channel.id == 638566668372541441 or mes.channel.id == 631597319103578122:
             owner_role = mes.guild.get_role(596185339018608641)
             second_owner = mes.guild.get_role(641841757121675264)
 
-            if (not owner_role in mes.author.roles) or (not second_owner in mes.author.roles):
-                await mes.delete()
+            if not owner_role in mes.author.roles:
+                if not second_owner in mes.author.roles:
+                    await mes.delete()
 
         await bot.process_commands(mes)
 
