@@ -15,6 +15,11 @@ def is_mod_or_up(ctx):
     return False
 
 @bot.command()
+async def say(ctx, *, mes):
+    await ctx.message.delete()
+    await ctx.send(mes)
+
+@bot.command()
 async def ping(ctx):
     current_time = datetime.datetime.utcnow().timestamp()
     mes_time = ctx.message.created_at.timestamp()
@@ -95,7 +100,7 @@ async def on_member_join(member):
             await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
             "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
             "check out the questions below and answer them. A " + gatekeeper.mention + " will review them and verify you.\n\n" +
-            "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (via advertising links, friends, etc)?" +
+            "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (don't just say advertising, be more specific)?" +
             "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
             "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
             "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n\n6. In your own " +
