@@ -33,38 +33,48 @@ async def say(ctx, *, mes):
 @commands.check(is_mod_or_up)
 async def check_stats(ctx, season):
     season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
-    count = 0
-    mes_of_people = "```\n"
+    if season_x_role == None:
+        await ctx.send("Invalid season number!")
+    else:
+        count = 0
+        mes_of_people = "```\n"
 
-    for member in ctx.guild.members:
-        if season_x_role in member.roles:
-            count += 1
-            mes_of_people += (f"{member.display_name}\n")
+        for member in ctx.guild.members:
+            if season_x_role in member.roles:
+                count += 1
+                mes_of_people += (f"{member.display_name}\n")
 
-    await ctx.send(f'There are {count} people that have the S{season} badge.')
-    await ctx.author.send(mes_of_people + "```")
+        await ctx.send(f'There are {count} people that have the S{season} badge.')
+        await ctx.author.send(mes_of_people + "```")
 
 @bot.command()
 @commands.check(is_mod_or_up)
 async def season_add(ctx, season, message_id):
-    ori_mess = await ctx.guild.get_channel(596186025630498846).fetch_message(int(message_id))
+    ori_mess = None
+
+    try:
+        ori_mess = await ctx.guild.get_channel(596186025630498846).fetch_message(int(message_id))
+    except discord.NotFound:
+        await ctx.send("Invalid message ID!")
     ori_timestamp = ori_mess.created_at.timestamp()
 
     guild_members = ctx.guild.members
 
     season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
+    if season_x_role == None:
+        await ctx.send("Invalid season number!")
+    else:
+        season_x_vets = []
 
-    season_x_vets = []
+        for member in guild_members:
+            if member.joined_at.timestamp() < ori_timestamp and not member.bot:
+                season_x_vets.append(member)
 
-    for member in guild_members:
-        if member.joined_at.timestamp() < ori_timestamp and not member.bot:
-            season_x_vets.append(member)
+        for vet in season_x_vets:
+            await vet.add_roles(season_x_role)
+            print("Added " + vet.display_name)
 
-    for vet in season_x_vets:
-        await vet.add_roles(season_x_role)
-        print("Added " + vet.display_name)
-
-    await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
+        await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
 
 @bot.command()
 @commands.check(is_mod_or_up)
@@ -72,15 +82,22 @@ async def verify(ctx, member: discord.Member):
     to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
     member_role = discord.utils.get(ctx.guild.roles, name='Member')
 
-    await member.remove_roles(to_be_verified)
-    await member.add_roles(member_role)
+    if not to_be_verified in member.roles:
+        await ctx.send("This user is already verified!")
+    else:
+        await member.remove_roles(to_be_verified)
+        await member.add_roles(member_role)
 
-    await ctx.send(f"{member.mention} was verified!")
+        await ctx.send(f"{member.mention} was verified!")
 
 @bot.command()
 async def role_id(ctx, role_name):
     role = discord.utils.get(ctx.guild.roles, name=role_name)
-    await ctx.send(str(role.id))
+    
+    if role == None:
+        await ctx.send("Invalid role name!")
+    else:
+        await ctx.send(str(role.id))
 
 bot.remove_command("help")
 @bot.command()
@@ -139,5 +156,16 @@ async def on_ready():
 
     activity = discord.Activity(name = 'over Bappo\'s Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
+
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        original = error.original
+        if not isinstance(original, discord.HTTPException):
+            print(original)
+
+            owner = await bot.application_info().owner
+            ctx.send(f"{owner.mention}: {original}")
+    elif isinstance(error, commands.ArgumentParsingError):
+        await ctx.send(error)
 
 bot.run(os.environ.get("MAIN_TOKEN"))
