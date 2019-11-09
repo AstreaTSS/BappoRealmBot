@@ -123,10 +123,12 @@ async def on_member_join(member):
             gatekeeper = discord.utils.get(member.guild.roles, name='Gatekeeper')
 
             verify_channel = discord.utils.get(member.guild.channels, name='verify')
+            gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
             await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
             "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
-            "check out the questions below and answer them. A " + gatekeeper.mention + " will review them and verify you.\n\n" +
+            "check out the questions below and answer them here. Also, make sure to put your gamertag in " + gamertags.mention + " so that we " +
+            "know who you are in Minecraft.\nA " + gatekeeper.mention + " will review them and verify you.\n\n" +
             "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (don't just say advertising, be more specific)?" +
             "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
             "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
