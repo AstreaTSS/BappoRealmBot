@@ -70,10 +70,10 @@ async def season_add(ctx, season, message_id):
 @commands.check(is_mod_or_up)
 async def verify(ctx, member: discord.Member):
     to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
-    member = discord.utils.get(ctx.guild.roles, name='Member')
+    member_role = discord.utils.get(ctx.guild.roles, name='Member')
 
     await member.remove_roles(to_be_verified)
-    await member.add_roles(member)
+    await member.add_roles(member_role)
 
     await ctx.send(f"{member.mention} was verified!")
 
