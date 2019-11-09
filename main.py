@@ -15,11 +15,6 @@ def is_mod_or_up(ctx):
     return False
 
 @bot.command()
-async def say(ctx, *, mes):
-    await ctx.message.delete()
-    await ctx.send(mes)
-
-@bot.command()
 async def ping(ctx):
     current_time = datetime.datetime.utcnow().timestamp()
     mes_time = ctx.message.created_at.timestamp()
@@ -28,6 +23,11 @@ async def ping(ctx):
     ping_personal = round((current_time - mes_time) * 1000, 2)
 
     await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n`{ping_personal}` ms personally (not accurate)")
+
+@bot.command()
+async def say(ctx, *, mes):
+    await ctx.message.delete()
+    await ctx.send(mes)
 
 @bot.command()
 @commands.check(is_mod_or_up)
@@ -67,12 +67,22 @@ async def season_add(ctx, season, message_id):
     await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
 
 @bot.command()
+@commands.check(is_mod_or_up)
+async def verify(ctx, member: discord.Member):
+    to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
+    member = discord.utils.get(ctx.guild.roles, name='Member')
+
+    await member.remove_roles(to_be_verified)
+    await member.add_roles(member)
+
+    await ctx.send(f"{member.mention} was verified!")
+
+@bot.command()
 async def role_id(ctx, role_name):
     role = discord.utils.get(ctx.guild.roles, name=role_name)
     await ctx.send(str(role.id))
 
 bot.remove_command("help")
-
 @bot.command()
 async def help(ctx):
     await ctx.send("There is no help command, suggesting the rare cases where any of the commands are used, "
