@@ -37,12 +37,13 @@ async def ping(ctx):
 
 @bot.command()
 async def say(ctx, *args):
+    print(args[0])
     if type(args[0]) is discord.TextChannel:
         channel = args[0]
         await channel.send(" ".join(args[1:]))
         await ctx.message.delete()
     else:
-        await channel.send(" ".join(args))
+        await ctx.send(" ".join(args))
         await ctx.message.delete()
 
 @bot.command()
