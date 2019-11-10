@@ -40,7 +40,11 @@ async def say(ctx, *args):
 
     optional_channel = None
 
+    print(args[0])
+    print(type(args[0]))
+
     if "<#" in args[0]:
+        print('go ahead')
         channel_id = re.sub("[<#>]", "", args[0])
         optional_channel = ctx.guild.get_channel(channel_id)
     if optional_channel is not None:
