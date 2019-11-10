@@ -1,0 +1,24 @@
+{
+  "embed": {
+    "description": "A list of every command offered by this bot.",
+    "color": 4886754,
+    "author": {
+      "name": "Bappo Realm Custom Bot",
+      "icon_url": "https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png"
+    },
+    "fields": [
+      {
+        "name": "Usable By Everyone",
+        "value": "`help - Displays this.\nping - Pings the bot.\nsay <optional channel, message> - Makes the bot say whatever you command it to. Can specify channel to send.\ncheck_stats <season> - Checks the stats for the season you give. Doesn't support the latest season.`"
+      },
+      {
+        "name": "Gatekeeper+ Commands",
+        "value": "`gk verify <user> - Verifies the user mentioned.\ngk kick <user, reason> - Kicks the user mentioned if they aren't verified. A reason is needed, too.\ngk ban <user, reason> - Bans the user mentioned if they aren't verified. A reason is needed, too.`"
+      },
+      {
+        "name": "Mod+ Commands",
+        "value": "`season_add <season, a message id> - Gives the S<season> role (which must exist beforehand) to everyone who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name)>.`"
+      }
+    ]
+  }
+}
