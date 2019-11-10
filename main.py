@@ -1,4 +1,4 @@
-import discord, datetime, os
+import discord, datetime, os, re
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix='!?')
@@ -37,10 +37,14 @@ async def ping(ctx):
 
 @bot.command()
 async def say(ctx, *args):
-    print(args[0])
-    if type(args[0]) is discord.TextChannel:
-        channel = args[0]
-        await channel.send(" ".join(args[1:]))
+
+    optional_channel = None
+
+    if "<#" in args[0]:
+        channel_id = re.sub("[<#>]", "", args[0])
+        optional_channel = ctx.guild.get_channel(channel_id)
+    if optional_channel is not None:
+        await optional_channel.send(" ".join(args[1:]))
         await ctx.message.delete()
     else:
         await ctx.send(" ".join(args))
@@ -150,7 +154,7 @@ async def help(ctx):
     embed.add_field(name="Gatekeeper+ Commands", value="`gk verify <user> - Verifies the user mentioned.\ngk kick <user, reason> - Kicks the user " + 
     "mentioned if they aren't verified. A reason is needed, too.\ngk ban <user, reason> - Bans the user mentioned if they aren't verified. A reason is needed, too.`")
     embed.add_field(name="Mod+ Commands", value="`season_add <season, a message id> - Gives the S<season> role (which must exist beforehand) to everyone " +
-    "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name)>.`")
+    "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.`")
 
     await ctx.send(embed=embed)
 
