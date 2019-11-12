@@ -36,7 +36,9 @@ async def ping(ctx):
     await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n`{ping_personal}` ms personally (not accurate)")
 
 @bot.command()
-async def say(ctx, *args):
+async def say(ctx, *, message):
+
+    args = message.split(" ")
 
     optional_channel = None
 
@@ -45,10 +47,8 @@ async def say(ctx, *args):
         optional_channel = ctx.guild.get_channel(int(channel_id))
     if optional_channel is not None:
         await optional_channel.send(" ".join(args[1:]))
-        await ctx.message.delete()
     else:
         await ctx.send(" ".join(args))
-        await ctx.message.delete()
 
 @bot.command()
 async def check_stats(ctx, season):
@@ -222,5 +222,7 @@ async def on_command_error(ctx, error):
             ctx.send(f"{owner.mention}: {original}")
     elif isinstance(error, commands.ArgumentParsingError):
         await ctx.send(error)
+    elif isinstance(error, commands.CommandNotFound):
+        ignore_error = True
 
 bot.run(os.environ.get("MAIN_TOKEN"))
