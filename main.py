@@ -249,16 +249,20 @@ async def countdown_check(loop):
             date_minutes = date_difference.minute
             date_seconds = date_difference.second
 
-            embed = discord.Embed(title=f"Countdown to {countdown.name}", colour=countdown.color)
+            embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
             
-            mess_value_1 = f"There are **{date_days} day(s), {date_hours} minute(s), {date_minutes} minute(s), and {date_seconds} second(s)** "
-            mess_value_2 = f" until {countdown.name}!"
+            day_plural = "day" if date_days == 1 else "days"
+            hour_plural = "hour" if date_hours == 1 else "hours"
+            minute_plural = "minute" if date_minutes == 1 else "minutes"
+            second_plural = "second" if date_seconds == 1 else "seconds"
+
+            mess_value_1 = f"There are **{date_days} {day_plural}, {date_hours} {hour_plural}, {date_minutes} {minute_plural}, "
+            mess_value_2 = f"and {date_seconds} {second_plural}** until {countdown.name}!"
             mess_value = mess_value_1 + mess_value_2
 
             embed.add_field(name="Time Till", value=mess_value)
 
             channel = await bot.fetch_channel(countdown.channel_id)
-
             await channel.send(embed=embed)
 
 @bot.event
