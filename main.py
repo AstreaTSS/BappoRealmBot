@@ -244,10 +244,10 @@ async def countdown_check(loop):
             time_difference = current_time - countdown.time
             date_difference = datetime.datetime.fromtimestamp(time_difference)
 
-            date_days = date_difference.days
-            date_hours = date_difference.hours
-            date_minutes = date_difference.minutes
-            date_seconds = date_difference.seconds
+            date_days = date_difference.day
+            date_hours = date_difference.hour
+            date_minutes = date_difference.minute
+            date_seconds = date_difference.second
 
             embed = discord.Embed(title=f"Countdown to {countdown.name}", colour=countdown.color)
             
