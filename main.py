@@ -1,5 +1,6 @@
-import discord, datetime, os, re, aiohttp, asyncio
+import discord, datetime, os, re, aiohttp, asyncio, math
 from discord.ext import commands
+from countdown_class import Countdown
 
 bot = commands.Bot(command_prefix='!?')
 
@@ -106,6 +107,11 @@ async def role_id(ctx, role_name):
     else:
         await ctx.send(str(role.id))
 
+@bot.command()
+@commands.check(is_mod_or_up)
+async def forcecheck_countdown(ctx):
+    await countdown_check(False)
+
 @bot.group()
 @commands.check(is_gatekeeper_or_up)
 async def gk(ctx):
@@ -202,11 +208,58 @@ async def on_message(mes):
 
         await bot.process_commands(mes)
 
-async def countdown_check():
-    async with aiohttp.ClientSession() as session:
-        async with session.get('http://httpbin.org/get') as resp:
-            print(await resp.text())
+async def countdown_check(loop):
+    go = True
 
+    while go:
+        current_time = datetime.datetime.utcnow().timestamp()
+
+        if loop == False:
+            go = False
+        else:
+            multiplicity = math.ceil(current_time / 21600)
+            next_six = multiplicity * 21600
+
+            sleep_time = next_six - current_time
+
+            if sleep_time > 0:
+                await asyncio.sleep(sleep_time)
+
+        countdown_url = "https://raw.githubusercontent.com/Sonic4999/BappoRealmBot/master/countdowns.txt"
+        event_list = []
+        countdown_list = []
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(countdown_url) as resp:
+                text = await resp.text()
+                event_list = text.split("\n")
+
+        for line in event_list:
+            elements = line.split("|")
+
+            countdown = Countdown(elements[0], elements[1], elements[2], elements[3])
+            countdown_list.append(countdown)
+
+        for countdown in countdown_list:
+            time_difference = current_time - countdown.time
+            date_difference = datetime.datetime.fromtimestamp(time_difference)
+
+            date_days = date_difference.days
+            date_hours = date_difference.hours
+            date_minutes = date_difference.minutes
+            date_seconds = date_difference.seconds
+
+            embed = discord.Embed(title=f"Countdown to {countdown.name}", colour=countdown.color)
+            
+            mess_value_1 = f"There are **{date_days} day(s), {date_hours} minute(s), {date_minutes} minute(s), and {date_seconds} second(s)** "
+            mess_value_2 = f" until {countdown.name}!"
+            mess_value = mess_value_1 + mess_value_2
+
+            embed.add_field(name="Time Till", value=mess_value)
+
+            channel = await bot.fetch_channel(countdown.channel_id)
+
+            await channel.send(embed=embed)
 
 @bot.event
 async def on_ready():
@@ -217,6 +270,8 @@ async def on_ready():
 
     activity = discord.Activity(name = 'over Bappo\'s Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
+
+    bot.loop.create_task(countdown_check(True))
 
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
