@@ -241,29 +241,31 @@ async def countdown_check(loop):
             countdown_list.append(countdown)
 
         for countdown in countdown_list:
-            time_difference = current_time - countdown.time
-            date_difference = datetime.datetime.fromtimestamp(time_difference)
+            time_difference = countdown.time - current_time
 
-            date_days = date_difference.day
-            date_hours = date_difference.hour
-            date_minutes = date_difference.minute
-            date_seconds = date_difference.second
+            if (time_difference > 0):
+                date_difference = datetime.datetime.fromtimestamp(time_difference)
 
-            embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
-            
-            day_plural = "day" if date_days == 1 else "days"
-            hour_plural = "hour" if date_hours == 1 else "hours"
-            minute_plural = "minute" if date_minutes == 1 else "minutes"
-            second_plural = "second" if date_seconds == 1 else "seconds"
+                date_days = date_difference.day
+                date_hours = date_difference.hour
+                date_minutes = date_difference.minute
+                date_seconds = date_difference.second
 
-            mess_value_1 = f"There are **{date_days} {day_plural}, {date_hours} {hour_plural}, {date_minutes} {minute_plural}, "
-            mess_value_2 = f"and {date_seconds} {second_plural}** until {countdown.name}!"
-            mess_value = mess_value_1 + mess_value_2
+                embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
+                
+                day_plural = "day" if date_days == 1 else "days"
+                hour_plural = "hour" if date_hours == 1 else "hours"
+                minute_plural = "minute" if date_minutes == 1 else "minutes"
+                second_plural = "second" if date_seconds == 1 else "seconds"
 
-            embed.add_field(name="Time Till", value=mess_value)
+                mess_value_1 = f"There are **{date_days} {day_plural}, {date_hours} {hour_plural}, {date_minutes} {minute_plural}, "
+                mess_value_2 = f"and {date_seconds} {second_plural}** until {countdown.name}!"
+                mess_value = mess_value_1 + mess_value_2
 
-            channel = await bot.fetch_channel(countdown.channel_id)
-            await channel.send(embed=embed)
+                embed.add_field(name="Time Till", value=mess_value)
+
+                channel = await bot.fetch_channel(countdown.channel_id)
+                await channel.send(embed=embed)
 
 @bot.event
 async def on_ready():
