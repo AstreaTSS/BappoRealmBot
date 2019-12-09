@@ -1,4 +1,4 @@
-import discord, datetime, os, re
+import discord, datetime, os, re, aiohttp, asyncio
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix='!?')
@@ -167,7 +167,7 @@ async def on_member_join(member):
         if (current_time - member.created_at.timestamp()) <= 604800:
             try:
                 await member.send("Your account is too young to join the Bappo Realm Discord server. Try "
-                "again once your discord account is 7 days old.")
+                "again once your Discord account is 7 days old.")
             except discord.Forbidden:
                 print(member.display_name + " blocked DMs.")
 
@@ -201,6 +201,12 @@ async def on_message(mes):
                     await mes.delete()
 
         await bot.process_commands(mes)
+
+async def countdown_check():
+    async with aiohttp.ClientSession() as session:
+        async with session.get('http://httpbin.org/get') as resp:
+            print(await resp.text())
+
 
 @bot.event
 async def on_ready():
