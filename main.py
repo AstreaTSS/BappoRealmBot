@@ -246,7 +246,7 @@ async def countdown_check(loop):
             if (time_difference > 0):
                 date_difference = datetime.datetime.fromtimestamp(time_difference)
 
-                date_days = date_difference.day
+                date_days = date_difference.day - 1
                 date_hours = date_difference.hour
                 date_minutes = date_difference.minute
                 date_seconds = date_difference.second
