@@ -270,7 +270,7 @@ async def countdown_check(loop):
                 time_difference -= (date_hours * 3600)                
                 date_minutes = math.floor(time_difference / 60)
                 time_difference -= (date_minutes * 60)
-                date_seconds = time_difference
+                date_seconds = math.floor(time_difference)
 
                 embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
                 
