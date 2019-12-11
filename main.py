@@ -6,12 +6,15 @@ bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 
 def is_mod_or_up(ctx):
     mod_role = ctx.guild.get_role(596185228179931156)
+    dis_mod_role = ctx.guild.get_role(645467778429485076)
     owner_role = ctx.guild.get_role(596185339018608641)
     second_owner = ctx.guild.get_role(641841757121675264)
 
     member_roles = ctx.author.roles
 
-    if mod_role in member_roles or owner_role in member_roles or second_owner in member_roles:
+    if mod_role in member_roles or owner_role in member_roles:
+        return True
+    elif dis_mod_role in member_roles or second_owner in member_roles:
         return True
     return False
 
@@ -86,8 +89,6 @@ async def check_stats(ctx, season):
 
             await ctx.author.send(mes_of_people + "\n```")
 
-
-
 @bot.command()
 @commands.check(is_mod_or_up)
 async def season_add(ctx, season, message_id):
@@ -129,16 +130,16 @@ async def role_id(ctx, role_name):
 
 @bot.command()
 @commands.check(is_mod_or_up)
-async def forcecheck_countdown(ctx):
+async def forcerun_countdown(ctx):
     await countdown_check(False)
 
-@bot.group()
-@commands.check(is_gatekeeper_or_up)
-async def gk(ctx):
-    if ctx.invoked_subcommand is None:
-        await ctx.send('Invalid gatekeeper command passed...')
+@bot.command()
+@commands.check(is_mod_or_up)
+async def forcerun_kick_unverified(ctx):
+    await kick_unverified(False)
 
-@gk.command()
+@bot.command()
+@commands.check(is_gatekeeper_or_up)
 async def verify(ctx, member: discord.Member):
     to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
     member_role = discord.utils.get(ctx.guild.roles, name='Member')
@@ -151,22 +152,6 @@ async def verify(ctx, member: discord.Member):
 
         await ctx.send(f"{member.mention} was verified!")
 
-@gk.command()
-async def kick(ctx, member: discord.Member, *, reason):
-    to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
-    if not to_be_verified in member.roles:
-        await ctx.send("You can't kick this user! They don't have the To Be Verified role!")
-    else:
-        await member.kick(reason=f"By {ctx.author.display_name}: {reason}")
-
-@gk.command()
-async def ban(ctx, member: discord.Member, *, reason):
-    to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
-    if not to_be_verified in member.roles:
-        await ctx.send("You can't ban this user! They don't have the To Be Verified role!")
-    else:
-        await member.ban(reason=f"By {ctx.author.display_name}: {reason}")
-
 bot.remove_command("help")
 @bot.command()
 async def help(ctx):
@@ -177,10 +162,8 @@ async def help(ctx):
 
     embed.add_field(name="Usable By Everyone", value="`help - Displays this.\nping - Pings the bot.\nsay <optional channel, message> - Makes the bot " +
     "say whatever you command it to. Can specify channel to send.\ncheck_stats <season> - Checks the stats for the season you give. Doesn't support the latest season.`\n")
-    embed.add_field(name="Gatekeeper+ Commands", value="`gk verify <user> - Verifies the user mentioned.\ngk kick <user, reason> - Kicks the user " + 
-    "mentioned if they aren't verified. A reason is needed, too.\ngk ban <user, reason> - Bans the user mentioned if they aren't verified. A reason is needed, too.`\n")
     embed.add_field(name="Mod+ Commands", value="`season_add <season, a message id> - Gives the S<season> role (which must exist beforehand) to everyone " +
-    "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.`\n")
+    "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.\nverify <user> - Verifies the user mentioned.`")
 
     await ctx.send(embed=embed)
 
@@ -195,7 +178,8 @@ async def on_member_join(member):
                 await member.send("Your account is too young to join the Bappo Realm Discord server. Try "
                 "again once your Discord account is 7 days old.")
             except discord.Forbidden:
-                print(member.display_name + " blocked DMs.")
+                owner = await bot.application_info().owner
+                await owner.send(f"{member.mention} has blocked DMs and is being kicked for having too young of an account.")
 
             await member.kick(reason="Too young account to join Bappo")
         else:
@@ -241,7 +225,6 @@ async def countdown_check(loop):
             next_six = multiplicity * 21600
 
             sleep_time = next_six - current_time
-
             if sleep_time > 0:
                 await asyncio.sleep(sleep_time)
 
@@ -261,6 +244,7 @@ async def countdown_check(loop):
             countdown_list.append(countdown)
 
         for countdown in countdown_list:
+            current_time = datetime.datetime.utcnow().timestamp()
             time_difference = countdown.time - current_time
 
             if (time_difference > 0):
@@ -289,6 +273,48 @@ async def countdown_check(loop):
                 channel = await bot.fetch_channel(countdown.channel_id)
                 await channel.send(embed=embed)
 
+async def kick_unverified(loop):
+    go = True
+
+    while go:
+        if loop == False:
+            go = False
+        else:
+            current_time = datetime.datetime.utcnow().timestamp()
+
+            multiplicity = math.ceil(current_time / 28800)
+            next_eight = multiplicity * 28800
+
+            sleep_time = next_eight - current_time
+            if sleep_time > 0:
+                await asyncio.sleep(sleep_time)
+
+        current_time = datetime.datetime.utcnow().timestamp()
+        two_days_ago = current_time - 172800
+
+        unverified = []
+
+        guild = bot.get_guild(596183975953825792)
+        guild_members = guild.members
+
+        unverified_role = discord.utils.get(guild.roles, name="To Be Verified")
+
+        for member in guild_members:
+            if unverified_role in member.roles:
+                unverified.append(member)
+
+        for member in unverified:
+            if member.joined_at.timestamp() < two_days_ago:
+                try:
+                    await member.send("You have taken too long to do the verification questions, and have been kicked for doing so. " +
+                    "If you are still interested in joining the Bappo Realm,  please contact the original inviter to get an " +
+                    "invite or use the invite you used previously (for security reasons, the bot cannot give you one).")
+                except discord.Forbidden:
+                    owner = await bot.application_info().owner
+                    await owner.send(f"{member.mention} has blocked DMs and is being kicked for not verifying.")
+
+                await member.kick(reason="Took too long to verify")
+
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -300,6 +326,7 @@ async def on_ready():
     await bot.change_presence(activity = activity)
 
     bot.loop.create_task(countdown_check(True))
+    bot.loop.create_task(kick_unverified(True))
 
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
@@ -308,7 +335,7 @@ async def on_command_error(ctx, error):
             print(original)
 
             owner = await bot.application_info().owner
-            ctx.send(f"{owner.mention}: {original}")
+            await ctx.send(f"{owner.mention}: {original}")
     elif isinstance(error, commands.ArgumentParsingError):
         await ctx.send(error)
     elif isinstance(error, commands.CommandNotFound):
