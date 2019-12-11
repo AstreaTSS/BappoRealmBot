@@ -70,16 +70,17 @@ async def check_stats(ctx, season):
         if len(list_of_people) > 90:
             n = 90
             split_of_people = [list_of_people[i * n:(i + 1) * n] for i in range((len(list_of_people) + n - 1) // n )]
+            await ctx.author.send(f"```\nQuery of people in season {season}:\n```")
 
             for a_list in split_of_people:
-                mes_of_people = "```\n"
+                mes_of_people = f"```\n"
                 for name in a_list:
                     mes_of_people += name + "\n"
 
                 await ctx.author.send(mes_of_people + "\n```")
 
         else:
-            mes_of_people = "```\n"
+            mes_of_people = f"```\nQuery about people in season {season}:\n"
             for name in list_of_people:
                 mes_of_people += name + "\n"
 
