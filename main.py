@@ -58,15 +58,34 @@ async def check_stats(ctx, season):
         await ctx.send("Invalid season number!")
     else:
         count = 0
-        mes_of_people = "```\n"
+        list_of_people = []
 
         for member in ctx.guild.members:
             if season_x_role in member.roles:
                 count += 1
-                mes_of_people += (f"{member.display_name}\n")
+                list_of_people.append(member.display_name)
 
         await ctx.send(f'There are {count} people that have the S{season} badge.')
-        await ctx.author.send(mes_of_people + "```")
+
+        if len(list_of_people) > 90:
+            n = 90
+            split_of_people = [list_of_people[i * n:(i + 1) * n] for i in range((len(list_of_people) + n - 1) // n )]
+
+            for a_list in split_of_people:
+                mes_of_people = "```\n"
+                for name in a_list:
+                    mes_of_people += name
+
+                await ctx.send(mes_of_people + "\n```")
+
+        else:
+            mes_of_people = "```\n"
+            for name in list_of_people:
+                mes_of_people += name
+
+            await ctx.send(mes_of_people + "\n```")
+
+
 
 @bot.command()
 @commands.check(is_mod_or_up)
@@ -244,12 +263,14 @@ async def countdown_check(loop):
             time_difference = countdown.time - current_time
 
             if (time_difference > 0):
-                date_difference = datetime.datetime.fromtimestamp(time_difference)
 
-                date_days = date_difference.day - 1
-                date_hours = date_difference.hour
-                date_minutes = date_difference.minute
-                date_seconds = date_difference.second
+                date_days = math.floor(time_difference / 86400)
+                time_difference -= (date_days * 86400)
+                date_hours = math.floor(time_difference / 3600)
+                time_difference -= (date_hours * 3600)                
+                date_minutes = math.floor(time_difference / 60)
+                time_difference -= (date_minutes * 60)
+                date_seconds = time_difference
 
                 embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
                 
