@@ -2,7 +2,7 @@ import discord, datetime, os, re, aiohttp, asyncio, math
 from discord.ext import commands
 from countdown_class import Countdown
 
-bot = commands.Bot(command_prefix='!?')
+bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 
 def is_mod_or_up(ctx):
     mod_role = ctx.guild.get_role(596185228179931156)
@@ -74,16 +74,16 @@ async def check_stats(ctx, season):
             for a_list in split_of_people:
                 mes_of_people = "```\n"
                 for name in a_list:
-                    mes_of_people += name
+                    mes_of_people += name + "\n"
 
-                await ctx.send(mes_of_people + "\n```")
+                await ctx.author.send(mes_of_people + "\n```")
 
         else:
             mes_of_people = "```\n"
             for name in list_of_people:
-                mes_of_people += name
+                mes_of_people += name + "\n"
 
-            await ctx.send(mes_of_people + "\n```")
+            await ctx.author.send(mes_of_people + "\n```")
 
 
 
