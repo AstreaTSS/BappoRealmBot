@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks
+import discord, cogs.cmd_checks, re
 
 class ModCMDS(commands.Cog):
     def __init__(self, bot):
@@ -57,6 +57,22 @@ class ModCMDS(commands.Cog):
             await member.add_roles(member_role)
 
             await ctx.send(f"{member.mention} was verified!")
+
+    @commands.command()
+    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    async def say(self, ctx, *, message):
+
+        args = message.split(" ")
+
+        optional_channel = None
+
+        if (re.search("[<#>]", args[0])):
+            channel_id = re.sub("[<#>]", "", args[0])
+            optional_channel = ctx.guild.get_channel(int(channel_id))
+        if optional_channel is not None:
+            await optional_channel.send(" ".join(args[1:]))
+        else:
+            await ctx.send(" ".join(args))
 
 def setup(bot):
     bot.add_cog(ModCMDS(bot))
