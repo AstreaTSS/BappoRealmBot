@@ -16,7 +16,7 @@ class GeneralCMDS(commands.Cog):
         "put in. Case-insensitive, but spelling needs to be correct.\ncheck_stats <season> - Checks the stats for the season you give. Doesn't support the latest season.`\n")
         embed.add_field(name="Mod+ Commands", value="`season_add <season, a message id> - Gives the S<season> role (which must exist beforehand) to everyone " +
         "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.\nverify <user> - Verifies the user mentioned.\nsay <optional" +
-        " channel, message> Makes the bot say whatever you command it to. Can specify channel to send.")
+        " channel, message> Makes the bot say whatever you command it to. Can specify channel to send.`")
         embed.add_field(name="Unstable Mod+ Commands", value="`forcerun_countdown - forceruns the countdown function.\nforcerun_kick_unverified - forceruns the function " +
         "that kicks people who haven't been verified by 2 days of joining the server.`")
 
