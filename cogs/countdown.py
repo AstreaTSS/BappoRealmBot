@@ -39,7 +39,7 @@ class CountdownCMD(commands.Cog):
         await ctx.send("Done!")
 
     @commands.command()
-    async def countdown(self, ctx, event_name):
+    async def countdown(self, ctx, *, event_name):
         countdown_url = "https://raw.githubusercontent.com/Sonic4999/BappoRealmBot/master/countdowns.txt"
         event_list = []
         countdown = None
@@ -53,7 +53,7 @@ class CountdownCMD(commands.Cog):
             elements = line.split("|")
 
             if elements[0].lower() == event_name.lower():
-                countdown = Countdown(elements[0], elements[1], elements[2], elements[3])
+                countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
 
         if countdown == None:
             await ctx.send(f"`{event_name}` is not a valid event. Check your spelling.")
@@ -93,15 +93,16 @@ class CountdownCMD(commands.Cog):
             for line in event_list:
                 elements = line.split("|")
 
-                countdown = Countdown(elements[0], elements[1], elements[2], elements[3])
+                countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
                 countdown_list.append(countdown)
 
             for countdown in countdown_list:
                 current_time = datetime.datetime.utcnow().timestamp()
 
                 round_to_hour = math.floor(current_time / 100.0) * 100
+                x_hour_factor = countdown.every_x_hours * 3600
 
-                if (round_to_hour % 21600) == 0:
+                if (round_to_hour % x_hour_factor) == 0:
                     time_difference = countdown.time - current_time
 
                     if (time_difference > 0):
@@ -111,18 +112,19 @@ class CountdownCMD(commands.Cog):
 
                 elif round_to_hour == countdown.time:
                     embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
-                    embed.add_field(name="Time Till", value=f"**It is now {countdown.name}!**")
+                    embed.add_field(name="Time Till", value=f"**It's time for {countdown.name}!**")
 
                     channel = await self.bot.fetch_channel(countdown.channel_id)
                     await channel.send(embed=embed)
 
 
 class Countdown():
-    def __init__(self, name, color, channel_id, time):
+    def __init__(self, name, color, channel_id, time, every_x_hours):
         self.name = name
         self.color = discord.Color(int(color, 0))
         self.channel_id = channel_id
         self.time = int(time)
+        self.every_x_hours = int(every_x_hours)
 
 def setup(bot):
     bot.add_cog(CountdownCMD(bot))
