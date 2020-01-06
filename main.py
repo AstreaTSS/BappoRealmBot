@@ -18,7 +18,7 @@ async def on_ready():
     print(bot.user.id)
     print('------\n')
 
-    activity = discord.Activity(name = 'over Bappo\'s Realm', type = discord.ActivityType.watching)
+    activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
 
 async def on_command_error(ctx, error):

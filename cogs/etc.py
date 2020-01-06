@@ -29,12 +29,11 @@ class ETC(commands.Cog):
                 "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
                 "check out the questions below and answer them here. Also, make sure to put your gamertag in " + gamertags.mention + " so that we " +
                 "know who you are in Minecraft.\nA " + gatekeeper.mention + " will review them and verify you.\n\n" +
-                "```\nVerification Questions:\n\n1. In what ways did you manage to access the server (don't just say advertising, be more specific)?" +
-                "\n\n2. Is this your first time taking part in a minecraft community (server, realm, etc), if not, how many past communities " + 
-                "have you participated in?\n\n3. Have you ever had any experience in being helpful in a community, and if so, how?\n\n" +
-                "4. How long have you been participating in communities?\n\n5. What are you looking for in joining this server?\n\n6. In your own " +
-                "words, summarize rules 2 and 6 (If you don't understand what this means, explain rules 2 and 6 like you would if explaining it to " +
-                "another person).\n```")
+                "```\nVerification Questions:\n\n 1. How did you come to know about this realm? Don't just say \"advertising\" if that's true " +
+                "for you; be more specific, like stating from where.\n\n2. How long have you been playing Minecraft? How long have you been on " +
+                "Discord? Have you ever been a problem in Minecraft or Discord?\n\n3. What platform do you play on? Are you aware that this is a " +
+                " Bedrock edition realm, not a Java edition realm?\n\n4. What are RULES 2 and 6 in your own words? If you don't understand what this " + 
+                "means, explain rules 2 and 6 like you would if explaining it to another person.\n```")
 
     @commands.Cog.listener()
     async def on_message(self, mes):
