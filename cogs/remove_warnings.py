@@ -15,9 +15,8 @@ class RemoveWarnings(commands.Cog):
         await ctx.send("Done!")
 
     async def check_and_remove(self, member, role):
-        for roles in member.roles:
-            if role in roles:
-                await member.remove_roles(role)
+        if role in member.roles:
+            await member.remove_roles(role)
         
     async def remove_warnings(self, loop):
         go = True
