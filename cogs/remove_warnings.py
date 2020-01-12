@@ -44,8 +44,7 @@ class RemoveWarnings(commands.Cog):
             warning_2 = guild.get_role(623546740917927975)
             warning_3 = guild.get_role(623546743212212236)
 
-            entries = await guild.audit_logs(limit=None, before=thirty_days_ago,
-            action=discord.AuditLogAction.member_role_update).flatten()
+            entries = await guild.audit_logs(limit=None, before=thirty_days_ago, action=discord.AuditLogAction.member_role_update).flatten()
 
             for entry in entries:
                 if type(entry.target) is discord.Member and entry.after.roles != None:
