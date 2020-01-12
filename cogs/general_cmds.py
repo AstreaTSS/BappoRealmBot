@@ -18,7 +18,7 @@ class GeneralCMDS(commands.Cog):
         "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.\nverify <user> - Verifies the user mentioned.\nsay <optional" +
         " channel, message> Makes the bot say whatever you command it to. Can specify channel to send.`")
         embed.add_field(name="Unstable Mod+ Commands", value="`forcerun_countdown - forceruns the countdown function.\nforcerun_kick_unverified - forceruns the function " +
-        "that kicks people who haven't been verified by 2 days of joining the server.`")
+        "that kicks people who haven't been verified by 2 days of joining the server.\nforcerun_remove_warnings - forceruns the auto-remove-warnings function.`")
 
         await ctx.send(embed=embed)
 
