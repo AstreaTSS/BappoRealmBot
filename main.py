@@ -8,7 +8,8 @@ bot.remove_command("help")
 @bot.event
 async def on_ready():
 
-    cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified", "cogs.mod_cmds"]
+    cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified",
+    "cogs.mod_cmds", "cogs.remove_warnings"]
 
     for cog in cogs_list:
         bot.load_extension(cog)
@@ -31,5 +32,9 @@ async def on_command_error(ctx, error):
             await ctx.send(f"{owner.mention}: {original}")
     elif isinstance(error, commands.ArgumentParsingError):
         await ctx.send(error)
+    else:
+        print(error)
+        owner = await bot.application_info().owner
+        await ctx.send(f"{owner.mention}: {error}")
 
 bot.run(os.environ.get("MAIN_TOKEN"))

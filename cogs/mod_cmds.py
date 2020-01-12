@@ -36,7 +36,7 @@ class ModCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def role_id(self, ctx, role_name):
+    async def role_id(self, ctx, *role_name):
         role = discord.utils.get(ctx.guild.roles, name=role_name)
         
         if role == None:
