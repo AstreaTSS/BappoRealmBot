@@ -10,7 +10,7 @@ class RemoveWarnings(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def forcerun_remove_warningsd(self, ctx):
+    async def forcerun_remove_warnings(self, ctx):
         await self.remove_warnings(False)
         await ctx.send("Done!")
 
