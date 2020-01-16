@@ -27,10 +27,10 @@ class RemoveWarnings(commands.Cog):
             else:
                 current_time = datetime.datetime.utcnow().timestamp()
 
-                multiplicity = math.ceil(current_time / 43200)
-                next_twelve = multiplicity * 43200
+                multiplicity = math.ceil(current_time / 21600)
+                next_six = multiplicity * 21600
 
-                sleep_time = next_twelve - current_time
+                sleep_time = next_six - current_time
                 if sleep_time > 0:
                     await asyncio.sleep(sleep_time)
 
