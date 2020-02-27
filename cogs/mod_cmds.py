@@ -72,7 +72,7 @@ class ModCMDS(commands.Cog):
             optional_channel = ctx.guild.get_channel(int(channel_id))
             
         if ctx.message.attachments is not None:
-            for file in attachment:
+            for file in ctx.message.attachments:
                 to_file = await file.to_file()
                 files_sent.append(to_file)
                 
