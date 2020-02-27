@@ -1,3 +1,5 @@
+# EDIT: The bot has stopped running due to me dropping down as mod. It's been a good run.
+
 # Bappo Realm Bot
 
 ![Bappo Realm Bot Logo](https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256)
