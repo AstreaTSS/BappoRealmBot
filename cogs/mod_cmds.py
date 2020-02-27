@@ -65,14 +65,27 @@ class ModCMDS(commands.Cog):
         args = message.split(" ")
 
         optional_channel = None
+        files_sent = []
 
         if (re.search("[<#>]", args[0])):
             channel_id = re.sub("[<#>]", "", args[0])
             optional_channel = ctx.guild.get_channel(int(channel_id))
-        if optional_channel is not None:
-            await optional_channel.send(" ".join(args[1:]))
+            
+        if attachments is not None:
+            for file in attachment:
+                to_file = await file.to_file()
+                files_sent.append(to_file)
+                
+        if files == []:
+            if optional_channel is not None:
+                await optional_channel.send(" ".join(args[1:]))
+            else:
+                await ctx.send(" ".join(args))
         else:
-            await ctx.send(" ".join(args))
+            if optional_channel is not None:
+                await optional_channel.send(content=" ".join(args[1:]), files=files_sent)
+            else:
+                await ctx.send(content=" ".join(args), files=files_sent)
 
 def setup(bot):
     bot.add_cog(ModCMDS(bot))
