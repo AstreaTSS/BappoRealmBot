@@ -21,6 +21,10 @@ async def on_ready():
 
     activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
     await bot.change_presence(activity = activity)
+    
+@bot.check
+async def globally_block_dms(ctx):
+    return ctx.guild is not None
 
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
