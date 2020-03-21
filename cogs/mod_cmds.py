@@ -79,11 +79,13 @@ class ModCMDS(commands.Cog):
         if files_sent == []:
             if optional_channel is not None:
                 await optional_channel.send(" ".join(args[1:]))
+                await ctx.send(f"Done! Check out {optional_channel.mention}!")
             else:
                 await ctx.send(" ".join(args))
         else:
             if optional_channel is not None:
                 await optional_channel.send(content=" ".join(args[1:]), files=files_sent)
+                await ctx.send(f"Done! Check out {optional_channel.mention}!")
             else:
                 await ctx.send(content=" ".join(args), files=files_sent)
 
