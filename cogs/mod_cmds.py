@@ -76,7 +76,7 @@ class ModCMDS(commands.Cog):
                 to_file = await file.to_file()
                 files_sent.append(to_file)
                 
-        if files == []:
+        if files_sent == []:
             if optional_channel is not None:
                 await optional_channel.send(" ".join(args[1:]))
             else:
