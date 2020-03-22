@@ -17,7 +17,7 @@ class ETC(commands.Cog):
             "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
             "check out the questions below and answer them here. Also, make sure to put your gamertag in " + gamertags.mention + " so that we " +
             "know who you are in Minecraft.\nA " + gatekeeper.mention + " will review them and verify you.\n\n" +
-            "```\nVerification Questions:\n\n 1. How did you come to know about this realm? Don't just say \"advertising\" if that's true " +
+            "```\nVerification Questions:\n\n1. How did you come to know about this realm? Don't just say \"advertising\" if that's true " +
             "for you; be more specific, like stating from where.\n\n2. How long have you been playing Minecraft? How long have you been on " +
             "Discord? Have you ever been a problem in Minecraft or Discord?\n\n3. What platform do you play on? Are you aware that this is a " +
             " Bedrock edition realm, not a Java edition realm?\n\n4. What are RULES 2 and 6 in your own words? If you don't understand what this " + 

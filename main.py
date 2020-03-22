@@ -9,7 +9,7 @@ bot.remove_command("help")
 async def on_ready():
 
     cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified",
-    "cogs.mod_cmds", "cogs.remove_warnings"]
+    "cogs.mod_cmds", "cogs.remove_warnings", "cogs.say_cmds"]
 
     for cog in cogs_list:
         bot.load_extension(cog)

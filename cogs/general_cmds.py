@@ -1,26 +1,42 @@
 from discord.ext import commands
-import discord, re, datetime
+import discord, re, datetime, os, aiohttp
 
 class GeneralCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def post_paste(self, content):
+
+        posters = {
+            "api_dev_key": os.environ.get("PASTEBIN_KEY"), 
+            "api_option": "paste", 
+            "api_paste_code": content
+        }
+        url = "https://pastebin.com/api/api_post.php"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=posters) as resp:
+                if resp.status == 200:
+                    return await resp.text()
+                else:
+                    print(resp.status)
+                    print(await resp.text())
+                    return "ERROR, contact Sonic49."
     
     @commands.command()
     async def help(self, ctx):
+        
+        help_embed = discord.Embed(
+            title = "To see the list of commands and how to use them, please use the below link:", 
+            colour = discord.Colour(0x4a7de2), 
+            description = "https://tinyurl.com/bapporealmbothelp"
+        )
+        help_embed.set_author(
+            name="Bappo Realm Custom Bot", 
+            icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256"
+        )
 
-        embed = discord.Embed(colour=discord.Colour(0x4a90e2), description="A list of every command offered by this bot.")
-
-        embed.set_author(name="Bappo Realm Custom Bot", icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png")
-
-        embed.add_field(name="Usable By Everyone", value="`help - Displays this.\nping - Pings the bot.\ncountdown <event_name> - Gets the countdown of the event" +
-        "put in. Case-insensitive, but spelling needs to be correct.\ncheck_stats <season> - Checks the stats for the season you give. Doesn't support the latest season.`\n")
-        embed.add_field(name="Mod+ Commands", value="`season_add <season, a message id> - Gives the S<season> role (which must exist beforehand) to everyone " +
-        "who joined before <a message id> was created.\nrole_id <role name> - Gets the ID of <role name>.\nverify <user> - Verifies the user mentioned.\nsay <optional" +
-        " channel, message> Makes the bot say whatever you command it to. Can specify channel to send.`")
-        embed.add_field(name="Unstable Mod+ Commands", value="`forcerun_countdown - forceruns the countdown function.\nforcerun_kick_unverified - forceruns the function " +
-        "that kicks people who haven't been verified by 2 days of joining the server.\nforcerun_remove_warnings - forceruns the auto-remove-warnings function.`")
-
-        await ctx.send(embed=embed)
+        await ctx.send(embed=help_embed)
 
     @commands.command()
     async def ping(self, ctx):
@@ -44,28 +60,26 @@ class GeneralCMDS(commands.Cog):
             for member in ctx.guild.members:
                 if season_x_role in member.roles:
                     count += 1
-                    list_of_people.append(member.display_name)
+                    list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
 
-            await ctx.send(f'There are {count} people that have the S{season} badge.')
+            mes_of_people = f"```\nQuery about people in season {season}:\n"
+            for name in list_of_people:
+                mes_of_people += name + "\n"
 
-            if len(list_of_people) > 90:
-                n = 90
-                split_of_people = [list_of_people[i * n:(i + 1) * n] for i in range((len(list_of_people) + n - 1) // n )]
-                await ctx.author.send(f"```\nQuery of people in season {season}:\n```")
+            url = await self.post_paste(mes_of_people)
 
-                for a_list in split_of_people:
-                    mes_of_people = f"```\n"
-                    for name in a_list:
-                        mes_of_people += name + "\n"
+            stats_embed = discord.Embed(
+                title = f"There are {count} people that have the Season {season} Badge.", 
+                colour = discord.Colour(0x4a7de2), 
+                description = f"List of members: {url}"
+            )
 
-                    await ctx.author.send(mes_of_people + "\n```")
+            stats_embed.set_author(
+                name="Bappo Realm Custom Bot", 
+                icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256"
+            )
 
-            else:
-                mes_of_people = f"```\nQuery about people in season {season}:\n"
-                for name in list_of_people:
-                    mes_of_people += name + "\n"
-
-                await ctx.author.send(mes_of_people + "\n```")
+            await ctx.send(embed=stats_embed)
 
 def setup(bot):
     bot.add_cog(GeneralCMDS(bot))
