@@ -48,7 +48,8 @@ class SayCMDS(commands.Cog):
             optional_channel = ctx.guild.get_channel(int(channel_id))
             args.pop(0)
         
-        if (re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', args[0])):
+        temp_arg = args[0].replace("#", "")
+        if (re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', temp_arg)):
             hex_color = int(args[0].replace("#", ""), 16)
             optional_color = discord.Color(hex_color)
             args.pop(0)
