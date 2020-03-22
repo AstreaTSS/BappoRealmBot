@@ -25,7 +25,7 @@ class GeneralCMDS(commands.Cog):
     
     @commands.command()
     async def help(self, ctx):
-        
+
         help_embed = discord.Embed(
             title = "To see the list of commands and how to use them, please use the below link:", 
             colour = discord.Colour(0x4a7de2), 
@@ -62,7 +62,7 @@ class GeneralCMDS(commands.Cog):
                     count += 1
                     list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
 
-            mes_of_people = f"```\nQuery about people in season {season}:\n"
+            mes_of_people = f"Query about people in Season {season}:\n"
             for name in list_of_people:
                 mes_of_people += name + "\n"
 
