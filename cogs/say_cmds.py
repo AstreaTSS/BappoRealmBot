@@ -7,10 +7,9 @@ class SayCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def say(self, ctx, *, message):
+    async def say(self, ctx, *message):
 
-        args = message.split(" ")
-
+        args = list(message)
         optional_channel = None
         files_sent = []
 
@@ -19,8 +18,8 @@ class SayCMDS(commands.Cog):
             optional_channel = ctx.guild.get_channel(int(channel_id))
             
         if ctx.message.attachments is not None:
-            for file in ctx.message.attachments:
-                to_file = await file.to_file()
+            for a_file in ctx.message.attachments:
+                to_file = await a_file.to_file()
                 files_sent.append(to_file)
                 
         if files_sent == []:
@@ -35,6 +34,37 @@ class SayCMDS(commands.Cog):
                 await ctx.send(f"Done! Check out {optional_channel.mention}!")
             else:
                 await ctx.send(content=" ".join(args), files=files_sent)
+
+@commands.command()
+@commands.check(cogs.cmd_checks.is_mod_or_up)
+async def embed_say(self, ctx, *message):
+
+    args = list(message)
+    optional_channel = None
+    optional_color = None
+    
+    if (re.search("<[@#][!&]?[0-9]+>", args[0])):
+        channel_id = re.sub("[<#>]", "", args[0])
+        optional_channel = ctx.guild.get_channel(int(channel_id))
+        args.pop(0)
+    
+    if (re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', args[0])):
+        hex_color = int(args[0].replace("#", ""), 16)
+        optional_color = discord.Color(hex_color)
+        args.pop(0)
+
+    say_embed = discord.Embed()
+    say_embed.title = args[0]
+    say_embed.description = (" ".join(args[1:]))
+
+    if optional_color != None:
+        say_embed.colour = optional_color
+
+    if optional_channel != None:
+        await optional_channel.send(embed = say_embed)
+        await ctx.send(f"Done! Check out {optional_channel.mention}!")
+    else:
+        await ctx.send(embed = say_embed)
 
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
