@@ -44,16 +44,24 @@ class RemoveWarnings(commands.Cog):
             warning_2 = guild.get_role(623546740917927975)
             warning_3 = guild.get_role(623546743212212236)
 
-            entries = await guild.audit_logs(limit=None, before=thirty_days_dt, action=discord.AuditLogAction.member_role_update).flatten()
+            dict_members = {}
+
+            entries = await guild.audit_logs(limit=None, after=thirty_days_dt, oldest_first = False, action=discord.AuditLogAction.member_role_update).flatten()
 
             for entry in entries:
                 if type(entry.target) is discord.Member and entry.after.roles != None:
-                    if warning_1 in entry.after.roles:
+                    if not entry.target in dict_members.keys():
+                        dict_members[entry.target] = []
+
+                    if warning_1 in entry.after.roles and not warning_1 in dict_members[entry.target]:
                         await self.check_and_remove(entry.target, warning_1)
-                    if warning_2 in entry.after.roles:
+                        dict_members[entry.target].append(warning_1)
+                    if warning_2 in entry.after.roles and not warning_2 in dict_members[entry.target]:
                         await self.check_and_remove(entry.target, warning_2)
-                    if warning_3 in entry.after.roles:
+                        dict_members[entry.target].append(warning_2)
+                    if warning_3 in entry.after.roles and not warning_3 in dict_members[entry.target]:
                         await self.check_and_remove(entry.target, warning_3)
+                        dict_members[entry.target].append(warning_3)
 
 
 
