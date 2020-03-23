@@ -92,9 +92,9 @@ class CountdownCMD(commands.Cog):
 
             for line in event_list:
                 elements = line.split("|")
-
-                countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
-                countdown_list.append(countdown)
+                if elements != ['']:
+                    countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
+                    countdown_list.append(countdown)
 
             for countdown in countdown_list:
                 current_time = datetime.datetime.utcnow().timestamp()
