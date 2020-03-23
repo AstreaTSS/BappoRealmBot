@@ -23,8 +23,11 @@ async def on_ready():
     await bot.change_presence(activity = activity)
     
 @bot.check
-async def globally_block_dms(ctx):
-    return ctx.guild is not None
+async def block_dms(ctx):
+    if ctx.invoked_with == "dm_say":
+        return ctx.guild is None
+    else:
+        return ctx.guild is not None
 
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):

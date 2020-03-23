@@ -35,15 +35,22 @@ class SayCMDS(commands.Cog):
             else:
                 await ctx.send(content=" ".join(args), files=files_sent)
 
-    async def embed_setup_helper(self, ctx, ori_mes, question):
+    async def setup_helper(self, ctx, ori_mes, question, code_mes = True):
         def check(m):
             return m.author == ctx.author and m.channel == ctx.channel
 
-        await ori_mes.edit(
-            content =  ("```\n" + question + 
-            "\n\nYou have 10 minutes to reply to each question, otherwise this will automatically be exited." +
-            "\nIf you wish to exit at any time, just say \"exit\".\n```")
-        )
+        if code_mes:
+            await ori_mes.edit(
+                content =  ("```\n" + question + 
+                "\n\nYou have 10 minutes to reply to each question, otherwise this will automatically be exited." +
+                "\nIf you wish to exit at any time, just say \"exit\".\n```")
+            )
+        else:
+            await ori_mes.edit(
+                content =  ("Due to Discord limitations, this question looks slightly different.\n\n" + question + 
+                "\n\nYou have 10 minutes to reply to each question, otherwise this will automatically be exited." +
+                "\nIf you wish to exit at any time, just say \"exit\".")
+            )
 
         try:
             reply = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -66,7 +73,7 @@ class SayCMDS(commands.Cog):
 
         ori = await ctx.send("```\nSetting up...\n```")
 
-        reply = await self.embed_setup_helper(ctx, ori, (
+        reply = await self.setup_helper(ctx, ori, (
             "Because of this command's complexity, this command requires a little wizard.\n\n" +
             "1. If you wish to do so, which channel do you want to send this message to? If you just want to send it in " +
             "this channel, just say \"skip\"."
@@ -80,7 +87,7 @@ class SayCMDS(commands.Cog):
                 await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
                 return
 
-        reply = await self.embed_setup_helper(ctx, ori, (
+        reply = await self.setup_helper(ctx, ori, (
             "2. If you wish to do so, what color, in hex (ex. #000000), would you like the embed to have. Case-insensitive, " +
             "does not require '#'.\nIf you just want the default color, say \"skip\"."
         ))
@@ -97,7 +104,7 @@ class SayCMDS(commands.Cog):
 
         say_embed = discord.Embed()
 
-        reply = await self.embed_setup_helper(ctx, ori, (
+        reply = await self.setup_helper(ctx, ori, (
             "3. What will be the title of the embed? Markdown (fancy discord editing) will work with titles."
         ))
         if reply == None:
@@ -105,7 +112,7 @@ class SayCMDS(commands.Cog):
         else:
             say_embed.title = reply.content
 
-        reply = await self.embed_setup_helper(ctx, ori, (
+        reply = await self.setup_helper(ctx, ori, (
             "4. What will be the content of the embed? Markdown (fancy discord editing) will work with content."
         ))
         if reply == None:
@@ -124,5 +131,80 @@ class SayCMDS(commands.Cog):
 
         await ori.edit(content = "```\nSetup complete.\n```")
 
+    @commands.command()
+    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    async def dm_say(self, ctx):
+        
+        channel = None
+        content = ""
+        files_sent = []
+
+        guild = self.bot.get_guild(596183975953825792)
+
+        ori = await ctx.send("```\nSetting up...\n```")
+
+        reply = await self.setup_helper(ctx, ori, (
+            "Because of this command's complexity, this command requires a little wizard.\n\n" +
+            "1. What channel do you want to send this message in? You can either type out the full " +
+            "name of the channel, the ID of the channel, or the channel mention."
+        ))
+        if reply == None:
+            return
+        else:
+            if reply.content.isdigit():
+                channel = guild.get_channel(int(reply.content))
+            elif reply.channel_mentions[0] is not None:
+                channel = reply.channel_mentions[0]
+            else:
+                channel = discord.utils.get(guild.channels, name=reply.content)
+
+            if channel == None:
+                await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
+                return
+        
+        reply = await self.setup_helper(ctx, ori, (
+            f"Just making sure: is {channel.mention} right? Either type \"yes\" or \"no\"."
+        ), code_mes=False)
+        if reply == None:
+            return
+        else:
+            if reply.content.lower() == "no":
+                await ori.edit(content = "```\nFailed to get correct channel. Contact Sonic49. Exiting...\n```")
+                return
+            elif reply.content.lower() != "yes":
+                await ori.edit(content = "```\nFailed to get valid response. Exiting...\n```")
+                return
+        
+        reply = await self.setup_helper(ctx, ori, (
+            "3. What will be the content of the message?"
+        ))
+        if reply == None:
+            return
+        else:
+            content = reply.content
+
+        reply = await self.setup_helper(ctx, ori, (
+            "4. Do you wish to have any files, like images, be sent with the message? If so, send them now." +
+            "\nIf you don't want any files, say \"skip\"."
+        ))
+        if reply == None:
+            return
+        elif reply.content.lower() != "skip":
+            if reply.attachments is not None:
+                for a_file in reply.attachment:
+                    to_file = await a_file.to_file()
+                    files_sent.append(to_file)
+            else:
+                await ori.edit(content = "```\nInput detected but no files. Exiting...\n```")
+
+        if files_sent == []:
+            await channel.send(content)
+            await ctx.send(f"Done! Check out {channel.mention}!")
+        else:
+            await channel.send(content=content, files=files_sent)
+            await ctx.send(f"Done! Check out {channel.mention}!")
+
+        await ori.edit(content = "```\nSetup complete.\n```")
+        
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
