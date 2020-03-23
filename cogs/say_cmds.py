@@ -40,19 +40,19 @@ class SayCMDS(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.channel
 
         await ori_mes.edit(
-            content =  ("```\nBecause of this command's complexity, this command requires a little wizard.\n\n" +
-            question + "\n\nYou have 60 seconds to reply, otherwise this will automatically be exited." +
+            content =  ("```\n" + question + 
+            "\n\nYou have 60 seconds to reply, otherwise this will automatically be exited." +
             "\nIf you wish to exit at any time, just say \"exit\".\n```")
         )
 
         try:
             reply = await self.bot.wait_for('message', check=check, timeout=60.0)
         except asyncio.TimeoutError:
-            await ori_mes.edit("```\nFailed to reply. Exiting...\n```")
+            await ori_mes.edit(content = "```\nFailed to reply. Exiting...\n```")
             return None
         else:
             if reply.content.lower() == "exit":
-                await ori_mes.edit("```\nExiting...\n```")
+                await ori_mes.edit(content = "```\nExiting...\n```")
                 return None
             else:
                 return reply
@@ -67,6 +67,7 @@ class SayCMDS(commands.Cog):
         ori = await ctx.send("```\nSetting up...\n```")
 
         reply = await self.embed_setup_helper(ctx, ori, (
+            "Because of this command's complexity, this command requires a little wizard.\n\n" +
             "1. If you wish to do so, which channel do you want to send this message to? If you just want to send it in " +
             "this channel, just say \"skip\"."
         ))
@@ -76,7 +77,7 @@ class SayCMDS(commands.Cog):
             if reply.channel_mentions[0] is not None:
                 optional_channel = reply.channel_mentions[0]
             else:
-                await ori.edit("```\nFailed to get channel. Exiting...\n```")
+                await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
                 return
 
         reply = await self.embed_setup_helper(ctx, ori, (
@@ -91,7 +92,7 @@ class SayCMDS(commands.Cog):
                 hex_color = int(reply.content.replace("#", ""), 16)
                 optional_color = discord.Color(hex_color)
             else:
-                await ori.edit("```\nFailed to get hex color. Exiting...\n```")
+                await ori.edit(content = "```\nFailed to get hex color. Exiting...\n```")
                 return
 
         say_embed = discord.Embed()
@@ -121,7 +122,7 @@ class SayCMDS(commands.Cog):
         else:
             await ctx.send(embed = say_embed)
 
-        await ori.edit("```\nSetup complete.\n```")
+        await ori.edit(content = "```\nSetup complete.\n```")
 
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
