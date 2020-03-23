@@ -131,8 +131,27 @@ class SayCMDS(commands.Cog):
 
         await ori.edit(content = "```\nSetup complete.\n```")
 
+    async def dm_is_mod_or_up(self, ctx):
+        guild = ctx.bot.get_guild(596183975953825792)
+
+        mod_role = guild.get_role(596185228179931156)
+        owner_role = guild.get_role(596185339018608641)
+        second_owner = guild.get_role(641841757121675264)
+
+        guild_member = discord.utils.get(guild.members, id = ctx.author.id)
+        if guild_member == None:
+            return False
+
+        member_roles = guild_member.roles
+
+        if mod_role in member_roles or owner_role in member_roles:
+            return True
+        elif second_owner in member_roles:
+            return True
+        return False
+
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(dm_is_mod_or_up)
     async def dm_say(self, ctx):
         
         channel = None
@@ -205,6 +224,6 @@ class SayCMDS(commands.Cog):
             await ctx.send(f"Done! Check out {channel.mention}!")
 
         await ori.edit(content = "```\nSetup complete.\n```")
-        
+
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
