@@ -157,6 +157,7 @@ class SayCMDS(commands.Cog):
         channel = None
         content = ""
         files_sent = []
+        final_mess = None
 
         guild = self.bot.get_guild(596183975953825792)
 
@@ -217,13 +218,27 @@ class SayCMDS(commands.Cog):
                 await ori.edit(content = "```\nInput detected but no files. Exiting...\n```")
 
         if files_sent == []:
-            await channel.send(content)
+            final_mess = await channel.send(content)
             await ctx.send(f"Done! Check out {channel.mention}!")
         else:
-            await channel.send(content=content, files=files_sent)
+            final_mess = await channel.send(content=content, files=files_sent)
             await ctx.send(f"Done! Check out {channel.mention}!")
 
         await ori.edit(content = "```\nSetup complete.\n```")
+
+        log_embed = discord.Embed(
+            title = f"{ctx.author.mention} has sent a DM message using me!", 
+            colour = discord.Colour(0x4a7de2), 
+            description = f"Link: {final_mess.jump_url}"
+        )
+        log_embed.set_author(
+            name="Bappo Realm Custom Bot", 
+            icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256"
+        )
+
+        owner = await self.bot.application_info().owner
+        await owner.send(embed = log_embed)
+
 
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
