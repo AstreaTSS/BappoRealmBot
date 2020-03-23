@@ -92,9 +92,10 @@ class CountdownCMD(commands.Cog):
 
             for line in event_list:
                 elements = line.split("|")
-                if elements != ['']:
+                if elements is not ['']:
                     countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
                     countdown_list.append(countdown)
+                    print("Added Countdown!")
 
             for countdown in countdown_list:
                 current_time = datetime.datetime.utcnow().timestamp()
@@ -108,6 +109,8 @@ class CountdownCMD(commands.Cog):
 
                     channel = await self.bot.fetch_channel(countdown.channel_id)
                     await channel.send(embed=embed)
+                    print("Done!")
+                    
                 elif (round_to_hour % x_hour_factor) == 0:
                     time_difference = countdown.time - current_time
 
@@ -115,6 +118,7 @@ class CountdownCMD(commands.Cog):
                         embed = self.countdown_embed_creator(time_difference, countdown)
                         channel = await self.bot.fetch_channel(countdown.channel_id)
                         await channel.send(embed=embed)
+                        print("Done!")
 
 
 class Countdown():
