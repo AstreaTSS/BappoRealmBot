@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks, re
+import discord, cogs.cmd_checks, re, asyncio
 
 class SayCMDS(commands.Cog):
     def __init__(self, bot):
@@ -7,9 +7,9 @@ class SayCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def say(self, ctx, *message):
+    async def say(self, ctx, *, message):
 
-        args = list(message)
+        args = message.split(" ")
         optional_channel = None
         files_sent = []
 
@@ -35,28 +35,82 @@ class SayCMDS(commands.Cog):
             else:
                 await ctx.send(content=" ".join(args), files=files_sent)
 
+    async def embed_setup_helper(self, ctx, ori_mes, question):
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        await ori_mes.edit(
+            "```\nBecause of this command's complexity, this command requires a little wizard.\n\n" +
+            question + "\n\nYou have 60 seconds to reply, otherwise this will automatically be exited." +
+            "If you wish to exit at any time, just say \"exit\".\n```"
+        )
+
+        try:
+            reply = await self.bot.wait_for('message', check=check, timeout=60.0)
+        except asyncio.TimeoutError:
+            await ori_mes.edit("```\nFailed to reply. Exiting...\n```")
+            return None
+        else:
+            if reply.content.lower() == "exit":
+                await ori_mes.edit("```\nExiting...\n```")
+                return None
+            else:
+                return reply
+
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def embed_say(self, ctx, *message):
+    async def embed_say(self, ctx):
 
-        args = list(message)
         optional_channel = None
         optional_color = None
-        
-        if (re.search("<[@#][!&]?[0-9]+>", args[0])):
-            channel_id = re.sub("[<#>]", "", args[0])
-            optional_channel = ctx.guild.get_channel(int(channel_id))
-            args.pop(0)
-        
-        temp_arg = args[0].replace("#", "")
-        if (re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', temp_arg)):
-            hex_color = int(args[0].replace("#", ""), 16)
-            optional_color = discord.Color(hex_color)
-            args.pop(0)
+
+        ori = await ctx.send("```\nSetting up...\n```")
+
+        reply = await self.embed_setup_helper(ctx, ori, (
+            "1. If you wish to do so, which channel do you want to send this message to? If you just want to send it in " +
+            "this channel, just say \"skip\"."
+        ))
+        if reply == None:
+            return
+        elif reply.content.lower() != "skip":
+            if reply.channel_mentions[0] is not None:
+                optional_channel = reply.channel_mentions[0]
+            else:
+                await ori.edit("```\nFailed to get channel. Exiting...\n```")
+                return
+
+        reply = await self.embed_setup_helper(ctx, ori, (
+            "2. If you wish to do so, what color, in hex (ex. #000000), would you like the embed to have. Case-insensitive, " +
+            "does not require '#'.\nIf you just want the default color, say \"skip\"."
+        ))
+        if reply == None:
+            return
+        elif reply.content.lower() != "skip":
+            temp_fix = reply.content.replace("#", "")
+            if (re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', temp_fix)):
+                hex_color = int(reply.content.replace("#", ""), 16)
+                optional_color = discord.Color(hex_color)
+            else:
+                await ori.edit("```\nFailed to get hex color. Exiting...\n```")
+                return
 
         say_embed = discord.Embed()
-        say_embed.title = args[0]
-        say_embed.description = (" ".join(args[1:]))
+
+        reply = await self.embed_setup_helper(ctx, ori, (
+            "3. What will be the title of the embed? Markdown (fancy discord editing) will work with titles."
+        ))
+        if reply == None:
+            return
+        else:
+            say_embed.title = reply.content
+
+        reply = await self.embed_setup_helper(ctx, ori, (
+            "4. What will be the content of the embed? Markdown (fancy discord editing) will work with content."
+        ))
+        if reply == None:
+            return
+        else:
+            say_embed.description = reply.content
 
         if optional_color != None:
             say_embed.colour = optional_color
@@ -66,6 +120,8 @@ class SayCMDS(commands.Cog):
             await ctx.send(f"Done! Check out {optional_channel.mention}!")
         else:
             await ctx.send(embed = say_embed)
+
+        await ori.edit("```\nSetup complete.\n```")
 
 def setup(bot):
     bot.add_cog(SayCMDS(bot))
