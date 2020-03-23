@@ -236,7 +236,7 @@ class SayCMDS(commands.Cog):
             icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256"
         )
 
-        owner = await self.bot.application_info().owner
+        owner = await ctx.bot.application_info().owner
         await owner.send(embed = log_embed)
 
 
