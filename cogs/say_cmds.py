@@ -41,12 +41,12 @@ class SayCMDS(commands.Cog):
 
         await ori_mes.edit(
             content =  ("```\n" + question + 
-            "\n\nYou have 60 seconds to reply, otherwise this will automatically be exited." +
+            "\n\nYou have 10 minutes to reply to each question, otherwise this will automatically be exited." +
             "\nIf you wish to exit at any time, just say \"exit\".\n```")
         )
 
         try:
-            reply = await self.bot.wait_for('message', check=check, timeout=60.0)
+            reply = await self.bot.wait_for('message', check=check, timeout=600.0)
         except asyncio.TimeoutError:
             await ori_mes.edit(content = "```\nFailed to reply. Exiting...\n```")
             return None
