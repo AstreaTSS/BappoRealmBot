@@ -40,9 +40,9 @@ class SayCMDS(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.channel
 
         await ori_mes.edit(
-            "```\nBecause of this command's complexity, this command requires a little wizard.\n\n" +
+            content =  ("```\nBecause of this command's complexity, this command requires a little wizard.\n\n" +
             question + "\n\nYou have 60 seconds to reply, otherwise this will automatically be exited." +
-            "If you wish to exit at any time, just say \"exit\".\n```"
+            "\nIf you wish to exit at any time, just say \"exit\".\n```")
         )
 
         try:
