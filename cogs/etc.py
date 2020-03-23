@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, datetime
+import discord, random
 
 class ETC(commands.Cog):
     def __init__(self, bot):
@@ -25,14 +25,9 @@ class ETC(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, mes):
-        if not mes.guild == None and not mes.author.bot:
-            if mes.channel.id == 638566668372541441 or mes.channel.id == 631597319103578122:
-                owner_role = mes.guild.get_role(596185339018608641)
-                second_owner = mes.guild.get_role(641841757121675264)
-
-                if not owner_role in mes.author.roles:
-                    if not second_owner in mes.author.roles:
-                        await mes.delete()
+        rand_chance = random.randint(1, 4999)
+        if rand_chance == 49:
+            await mes.add_reaction("🍍")
 
 def setup(bot):
     bot.add_cog(ETC(bot))
