@@ -100,7 +100,7 @@ class SayCMDS(commands.Cog):
         if reply == None:
             return
         elif reply.content.lower() != "skip":
-            if reply.channel_mentions[0] is not None:
+            if reply.channel_mentions != []:
                 optional_channel = reply.channel_mentions[0]
             else:
                 await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
@@ -172,10 +172,10 @@ class SayCMDS(commands.Cog):
         else:
             if reply.content.isdigit():
                 channel = guild.get_channel(int(reply.content))
-            elif reply.channel_mentions[0] is not None:
+            elif reply.channel_mentions != []:
                 channel = reply.channel_mentions[0]
             else:
-                channel = discord.utils.get(guild.channels, name=reply.content)
+                channel = discord.utils.get(guild.channels, name=reply.content.replace("#", ""))
 
             if channel == None:
                 await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
