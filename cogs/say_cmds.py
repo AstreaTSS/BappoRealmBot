@@ -183,7 +183,7 @@ class SayCMDS(commands.Cog):
                 return
         
         reply = await self.setup_helper(ctx, ori, (
-            f"Just making sure: is {channel.mention} right? Either type \"yes\" or \"no\"."
+            f"2. Just making sure: is {channel.mention} right? Either type \"yes\" or \"no\"."
         ), code_mes=False)
         if reply == None:
             return
@@ -226,19 +226,9 @@ class SayCMDS(commands.Cog):
 
         await ori.edit(content = "```\nSetup complete.\n```")
 
-        log_embed = discord.Embed(
-            title = f"{ctx.author.mention} has sent a DM message using me!", 
-            colour = discord.Colour(0x4a7de2), 
-            description = f"Link: {final_mess.jump_url}"
-        )
-        log_embed.set_author(
-            name="Bappo Realm Custom Bot", 
-            icon_url="https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256"
-        )
-
         application = await ctx.bot.application_info()
         owner = application.owner
-        await owner.send(embed = log_embed)
+        await owner.send(f"{ctx.author.mention} has sent a DM message using me!\nLink: {final_mess.jump_url}")
 
 
 def setup(bot):

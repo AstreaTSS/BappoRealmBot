@@ -51,7 +51,8 @@ class KickUnverified(commands.Cog):
                         "If you are still interested in joining the Bappo Realm,  please contact the original inviter to get an " +
                         "invite or use the invite you used previously (for security reasons, the bot cannot give you one).")
                     except discord.Forbidden:
-                        owner = await self.bot.application_info().owner
+                        application = await self.bot.application_info()
+                        owner = application.owner
                         await owner.send(f"{member.mention} has blocked DMs and is being kicked for not verifying.")
 
                     await member.kick(reason="Took too long to verify")

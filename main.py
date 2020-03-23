@@ -35,13 +35,16 @@ async def on_command_error(ctx, error):
         if not isinstance(original, discord.HTTPException):
             print(original)
 
-            owner = await bot.application_info().owner
+            application = await ctx.bot.application_info()
+            owner = application.owner
             await ctx.send(f"{owner.mention}: {original}")
     elif isinstance(error, commands.ArgumentParsingError):
         await ctx.send(error)
     else:
         print(error)
-        owner = await bot.application_info().owner
+        
+        application = await ctx.bot.application_info()
+        owner = application.owner
         await ctx.send(f"{owner.mention}: {error}")
 
 bot.run(os.environ.get("MAIN_TOKEN"))
