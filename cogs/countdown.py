@@ -92,7 +92,7 @@ class CountdownCMD(commands.Cog):
 
             for line in event_list:
                 elements = line.split("|")
-                if elements is not ['']:
+                if len(elements) == 5:
                     countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
                     countdown_list.append(countdown)
                     print("Added Countdown!")
@@ -110,7 +110,7 @@ class CountdownCMD(commands.Cog):
                     channel = await self.bot.fetch_channel(countdown.channel_id)
                     await channel.send(embed=embed)
                     print("Done!")
-                    
+
                 elif (round_to_hour % x_hour_factor) == 0:
                     time_difference = countdown.time - current_time
 
