@@ -110,20 +110,13 @@ class CountdownCMD(commands.Cog):
                     await channel.send(embed=embed)
                     print("Done!")
 
-                elif (round_to_hour % x_hour_factor) == 0:
+                elif (round_to_hour % x_hour_factor) == 0 or loop == False:
                     time_difference = countdown.time - current_time
 
                     if (time_difference > 0):
                         embed = self.countdown_embed_creator(time_difference, countdown)
                         channel = await self.bot.fetch_channel(countdown.channel_id)
                         await channel.send(embed=embed)
-
-                elif loop == False:
-                    if (time_difference > 0):
-                        embed = self.countdown_embed_creator(time_difference, countdown)
-                        channel = await self.bot.fetch_channel(countdown.channel_id)
-                        await channel.send(embed=embed)
-
 
 class Countdown():
     def __init__(self, name, color, channel_id, time, every_x_hours):
