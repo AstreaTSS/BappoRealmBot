@@ -95,7 +95,6 @@ class CountdownCMD(commands.Cog):
                 if len(elements) == 5:
                     countdown = Countdown(elements[0], elements[1], elements[2], elements[3], elements[4])
                     countdown_list.append(countdown)
-                    print("Added Countdown!")
 
             for countdown in countdown_list:
                 current_time = datetime.datetime.utcnow().timestamp()
@@ -118,7 +117,12 @@ class CountdownCMD(commands.Cog):
                         embed = self.countdown_embed_creator(time_difference, countdown)
                         channel = await self.bot.fetch_channel(countdown.channel_id)
                         await channel.send(embed=embed)
-                        print("Done!")
+
+                elif loop == False:
+                    if (time_difference > 0):
+                        embed = self.countdown_embed_creator(time_difference, countdown)
+                        channel = await self.bot.fetch_channel(countdown.channel_id)
+                        await channel.send(embed=embed)
 
 
 class Countdown():
