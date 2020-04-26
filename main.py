@@ -29,6 +29,7 @@ async def block_dms(ctx):
     else:
         return ctx.guild is not None
 
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         original = error.original
