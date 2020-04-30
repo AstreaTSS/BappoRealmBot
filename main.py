@@ -1,4 +1,5 @@
 import discord, os
+import keep_alive
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
@@ -53,5 +54,7 @@ async def on_command_error(ctx, error):
         application = await ctx.bot.application_info()
         owner = application.owner
         await ctx.send(f"{owner.mention}: {error.original}")
+
+keep_alive.keep_alive()
 
 bot.run(os.environ.get("MAIN_TOKEN"))
