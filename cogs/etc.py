@@ -13,15 +13,24 @@ class ETC(commands.Cog):
             verify_channel = discord.utils.get(member.guild.channels, name='verify')
             gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
-            await verify_channel.send("Welcome to the Bappo Realm, " + member.mention + "!\n\nYou might have " +
-            "noticed that there's not a lot of channels. Well, that's because you have to be verified. To be verified, " +
-            "check out the questions below and answer them here. Also, make sure to put your gamertag in " + gamertags.mention + " so that we " +
-            "know who you are in Minecraft.\nA " + gatekeeper.mention + " will review them and verify you.\n\n" +
-            "```\nVerification Questions:\n\n1. How did you come to know about this realm? Don't just say \"advertising\" if that's true " +
-            "for you; be more specific, like stating from where.\n\n2. How long have you been playing Minecraft? How long have you been on " +
-            "Discord? Have you ever been a problem in Minecraft or Discord?\n\n3. What platform do you play on? Are you aware that this is a " +
-            " Bedrock edition realm, not a Java edition realm?\n\n4. What are RULES 2 and 6 in your own words? If you don't understand what this " + 
-            "means, explain rules 2 and 6 like you would if explaining it to another person.\n```")
+            verify_start = (f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have " +
+            "noticed that there's not a lot of channels. Well, that's because you have to be verified. To get verified, " +
+            f"*answer the below questions and put your gamertag in {gamertags.mention}.* A {gatekeeper.mention} will then verify you.\n\n")
+
+            verify_questions = """```
+            Verification Questions:
+
+            1. How did you come to know about this Realm?
+
+            2. Roughly how long have you been on Minecraft and Discord?
+
+            3. What platform do you play on?
+
+            4. What are RULES 2 and 6 of this server?
+            ```
+            """
+
+            await verify_channel.send(verify_start + verify_questions)
 
     @commands.Cog.listener()
     async def on_message(self, mes):
