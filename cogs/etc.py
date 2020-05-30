@@ -14,12 +14,13 @@ class ETC(commands.Cog):
             gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
             verify_start = (f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have " +
-            "noticed that there's not a lot of channels. Well, that's because you have to be verified. To get verified, " +
-            f"answer the below questions **and** put your gamertag in {gamertags.mention}. A {gatekeeper.mention} will then verify you.\n\n")
+            "noticed that there's not a lot of channels. Well, that's because you have to be verified. " +
+            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}. " +
+            f"A {gatekeeper.mention} will then verify you.\n\n")
 
             verify_questions = ("```\nVerification Questions:\n\n" +
             "1. How did you find this Realm?\n\n" +
-            "2. Roughly how long have you been on Minecraft?\n\n" +
+            "2. Roughly how long have you been playing Minecraft?\n\n" +
             "3. What platform/device do you play on?\n\n" +
             "4. What are RULES 2 and 6 of this server?\n```")
 
