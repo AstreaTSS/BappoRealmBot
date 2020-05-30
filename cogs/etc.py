@@ -22,7 +22,7 @@ class ETC(commands.Cog):
             "1. How did you find this Realm?\n\n" +
             "2. Roughly how long have you been playing Minecraft?\n\n" +
             "3. What platform/device do you play on?\n\n" +
-            "4. What are RULES 2 and 6 of this server?\n```")
+            "4. What is RULE 3 of this server?\n```")
 
             await verify_channel.send(verify_start + verify_questions)
 
