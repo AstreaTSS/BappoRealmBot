@@ -20,7 +20,7 @@ class ETC(commands.Cog):
 
             verify_questions = ("```\nVerification Questions:\n\n" +
             "1. How did you find this Realm?\n\n" +
-            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'years'.)\n\n" +
+            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'for years'.)\n\n" +
             "3. What platform/device do you play on?\n\n" +
             "4. What is RULE 3 of this server?\n```")
 
