@@ -15,12 +15,12 @@ class ETC(commands.Cog):
 
             verify_start = (f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have " +
             "noticed that there's not a lot of channels. Well, that's because you have to be verified. " +
-            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}. " +
-            f"A {gatekeeper.mention} will then verify you.\n\n")
+            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}.\n" +
+            f"A {gatekeeper.mention} will then verify you, but this is a manual process, so it might take a while.\n\n")
 
             verify_questions = ("```\nVerification Questions:\n\n" +
             "1. How did you find this Realm?\n\n" +
-            "2. Roughly how long have you been playing Minecraft?\n\n" +
+            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'years'.)\n\n" +
             "3. What platform/device do you play on?\n\n" +
             "4. What is RULE 3 of this server?\n```")
 
