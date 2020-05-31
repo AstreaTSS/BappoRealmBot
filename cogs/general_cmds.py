@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, re, datetime, os, aiohttp
+import discord, re, time, os, aiohttp
 
 class GeneralCMDS(commands.Cog):
     def __init__(self, bot):
@@ -40,13 +40,15 @@ class GeneralCMDS(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        current_time = datetime.datetime.utcnow().timestamp()
-        mes_time = ctx.message.created_at.timestamp()
-
+        start_time = time.perf_counter()
         ping_discord = round((self.bot.latency * 1000), 2)
-        ping_personal = round((current_time - mes_time) * 1000, 2)
 
-        await ctx.send(f"Pong! `{ping_discord}` ms from discord.\n`{ping_personal}` ms personally (not accurate)")
+        mes = await ctx.send(f"Pong!\n`{ping_discord}` ms from Discord.\nCalculating personal ping...")
+        
+        end_time = time.perf_counter()
+        ping_personal = round(((end_time - start_time) * 1000), 2)
+        
+        await mes.edit(content=f"Pong!\n`{ping_discord}` ms from Discord.\n`{ping_personal}` ms personally.")
 
     @commands.command()
     async def check_stats(self, ctx, season):
