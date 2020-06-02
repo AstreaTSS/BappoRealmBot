@@ -105,7 +105,7 @@ class ModCMDS(commands.Cog):
                     await ctx.send(f"ERROR: Could not user's gamertag in {gamertags.mention}!\n{force_txt}")
                     return
 
-                status = await self.xbl_handler(mem_gt_msg, member)
+                status = await self.xbl_handler(mem_gt_msg.content, member)
 
                 if status != "OK":
                     await ctx.send(f"{status}\n{force_txt}")
