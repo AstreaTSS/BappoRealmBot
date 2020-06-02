@@ -19,7 +19,7 @@ class ModCMDS(commands.Cog):
             async with session.get("https://xbl.io/api/v2/friends/search",params=f"gt={mem_gt_url}") as r:
                 resp_json = await r.json()
                 if "code" in resp_json.keys():
-                    return f"ERROR: Unable to find {user.mention}'s gamertag, {gamertag}!"
+                    return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`!"
                 else:
                     settings = {}
                     for setting in resp_json["profileUsers"][0]["settings"]:
