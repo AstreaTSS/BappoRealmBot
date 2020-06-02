@@ -46,7 +46,7 @@ async def on_command_error(ctx, error):
         if not dms_check:
             await ctx.send("You do not have the proper permissions to use that command.")
     elif isinstance(error, commands.CommandNotFound):
-        ignore = True
+        pass
     else:
         print(error.original)
         
