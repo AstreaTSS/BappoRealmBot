@@ -25,7 +25,7 @@ class ModCMDS(commands.Cog):
                     for setting in resp_json["profileUsers"][0]["settings"]:
                         settings[setting["id"]] = setting["value"]
                     
-                    if setting["XboxOneRep"] != "GoodPlayer":
+                    if settings["XboxOneRep"] != "GoodPlayer":
                         return (f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! " +
                         "Be careful!A mod must bypass this check for the user to be verified.")
                     elif settings["Gamerscore"] == "0":

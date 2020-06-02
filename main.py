@@ -7,9 +7,7 @@ bot.remove_command("help")
 
 async def error_handle(bot, error):
     error_str = ''.join(traceback.format_exception(etype=type(error), value=error, tb=error.__traceback__))
-
     await msg_to_owner(bot, error_str)
-    bot.logger.error(error_str)
 
 async def msg_to_owner(bot, string):
     application = await bot.application_info()
