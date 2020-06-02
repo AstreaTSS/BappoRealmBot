@@ -1,9 +1,20 @@
-import discord, os
+import discord, os, traceback
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 
 bot.remove_command("help")
+
+async def error_handle(bot, error):
+    error_str = ''.join(traceback.format_exception(etype=type(error), value=error, tb=error.__traceback__))
+
+    await msg_to_owner(bot, error_str)
+    bot.logger.error(error_str)
+
+async def msg_to_owner(bot, string):
+    application = await bot.application_info()
+    owner = application.owner
+    await owner.send(f"{string}")
 
 @bot.event
 async def on_ready():
@@ -30,28 +41,26 @@ async def block_dms(ctx):
         return ctx.guild is not None
 
 @bot.event
+async def on_error(event, *args, **kwargs):
+    try:
+        raise
+    except Exception as e:
+        await error_handle(bot, e)
+
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         original = error.original
         if not isinstance(original, discord.HTTPException):
-            print(original)
-
-            application = await ctx.bot.application_info()
-            owner = application.owner
-            await ctx.send(f"{owner.mention}: {original}")
+            await error_handle(bot, error)
     elif isinstance(error, (commands.ConversionError, commands.UserInputError)):
         await ctx.send(error)
     elif isinstance(error, commands.CheckFailure):
-        dms_check = await block_dms(ctx)
-        if not dms_check:
+        if ctx.guild != None:
             await ctx.send("You do not have the proper permissions to use that command.")
     elif isinstance(error, commands.CommandNotFound):
         pass
     else:
-        print(error.original)
-        
-        application = await ctx.bot.application_info()
-        owner = application.owner
-        await ctx.send(f"{owner.mention}: {error.original}")
+        await error_handle(bot, error)
 
 bot.run(os.environ.get("MAIN_TOKEN"))
