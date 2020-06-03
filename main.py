@@ -5,9 +5,12 @@ bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 
 bot.remove_command("help")
 
-async def error_handle(bot, error):
+async def error_handle(bot, error, ctx = None):
     error_str = ''.join(traceback.format_exception(etype=type(error), value=error, tb=error.__traceback__))
     await msg_to_owner(bot, error_str)
+
+    if ctx != None:
+        await ctx.send("An internal error has occured. The owner of the bot has been notified.")
 
 async def msg_to_owner(bot, string):
     application = await bot.application_info()
@@ -50,7 +53,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         original = error.original
         if not isinstance(original, discord.HTTPException):
-            await error_handle(bot, error)
+            await error_handle(bot, error, ctx)
     elif isinstance(error, (commands.ConversionError, commands.UserInputError)):
         await ctx.send(error)
     elif isinstance(error, commands.CheckFailure):
@@ -59,6 +62,6 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandNotFound):
         pass
     else:
-        await error_handle(bot, error)
+        await error_handle(bot, error, ctx)
 
 bot.run(os.environ.get("MAIN_TOKEN"))

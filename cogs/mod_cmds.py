@@ -7,7 +7,7 @@ class ModCMDS(commands.Cog):
         self.bot = bot
 
     async def xbl_handler(self, gamertag, user):
-        mem_gt_url = urllib.parse.quote_plus(gamertag)
+        mem_gt_url = urllib.parse.quote_plus(gamertag.strip())
 
         headers = {
             "X-Authorization": os.environ.get("OPENXBL_KEY"),
