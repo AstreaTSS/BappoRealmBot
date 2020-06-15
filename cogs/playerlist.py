@@ -78,7 +78,7 @@ class Playerlist(commands.Cog):
         if offline_list != []:
             offline_str = "```\nOther people on in the last 24 hours:\n\n"
             offline_str += "\n".join(offline_list)
-            await ctx.send(offline_list + "\n```")
+            await ctx.send(offline_str + "\n```")
 
 def setup(bot):
     bot.add_cog(Playerlist(bot))
