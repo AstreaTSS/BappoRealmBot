@@ -38,10 +38,9 @@ class Playerlist(commands.Cog):
                 resp_json = await r.json()
                 return resp_json["clubs"][0]["clubPresence"]
 
-    @commands.command()
+    @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
     @commands.check(cogs.cmd_checks.is_mod_or_up)
     @commands.cooldown(1, 300, commands.BucketType.default)
-    @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
     async def playerlist(self, ctx):
         await ctx.send("This will probably take a long time. Please be patient.")
 
