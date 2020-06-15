@@ -22,7 +22,11 @@ class Playerlist(commands.Cog):
                 if "code" in resp_json.keys():
                     return f"User with xuid {xuid}"
                 else:
-                    gamertag = resp_json["profileUsers"][0]["settings"]["Gamertag"]
+                    settings = {}
+                    for setting in resp_json["profileUsers"][0]["settings"]:
+                        settings[setting["id"]] = setting["value"]
+
+                    gamertag = settings["Gamertag"]
 
                     self.bot.gamertags[xuid] = gamertag
                     return gamertag
