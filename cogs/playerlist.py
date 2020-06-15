@@ -65,7 +65,7 @@ class Playerlist(commands.Cog):
                     if member["lastSeenState"] == "InGame":
                         online_list.append(f"{gamertag}")
                     else:
-                        time_format = last_seen.strftime("%x %X UTC")
+                        time_format = last_seen.strftime("%x %X (%I:%M:%S %p) UTC")
                         offline_list.append(f"{gamertag}: last seen {time_format}")
                 else:
                     break
@@ -76,9 +76,21 @@ class Playerlist(commands.Cog):
             await ctx.send(online_str + "\n```")
 
         if offline_list != []:
-            offline_str = "```\nOther people on in the last 24 hours:\n\n"
-            offline_str += "\n".join(offline_list)
-            await ctx.send(offline_str + "\n```")
+            if len(offline_list) < 20:
+                offline_str = "```\nOther people on in the last 24 hours:\n\n"
+                offline_str += "\n".join(offline_list)
+                await ctx.send(offline_str + "\n```")
+            else:
+                chunks = [offline_list[x:x+20] for x in range(0, len(offline_list), 20)]
+                first_offline_str = "```\nOther people on in the last 24 hours:\n\n" + "\n".join(chunks[0]) + "\n```"
+                await ctx.send(first_offline_str)
+
+                for x in range(len(chunks)):
+                    if x == 0:
+                        continue
+                    
+                    offline_chunk_str = "```\n" + "\n".join(chunks[x]) + "\n```"
+                    await ctx.send(offline_chunk_str)
 
 def setup(bot):
     bot.add_cog(Playerlist(bot))
