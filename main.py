@@ -1,5 +1,6 @@
 import discord, os, traceback
 from discord.ext import commands
+from datetime import datetime
 
 bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 
@@ -20,19 +21,29 @@ async def msg_to_owner(bot, string):
 @bot.event
 async def on_ready():
 
-    cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified",
-    "cogs.mod_cmds", "cogs.remove_warnings", "cogs.say_cmds"]
+    if bot.init_load == True:
+        bot.gamertags = {}
 
-    for cog in cogs_list:
-        bot.load_extension(cog)
+        cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified",
+        "cogs.mod_cmds", "cogs.remove_warnings", "cogs.say_cmds", "cogs.playerlist"]
 
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------\n')
+        for cog in cogs_list:
+            bot.load_extension(cog)
 
-    activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
-    await bot.change_presence(activity = activity)
+        print('Logged in as')
+        print(bot.user.name)
+        print(bot.user.id)
+        print('------\n')
+
+        activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
+        await bot.change_presence(activity = activity)
+    else:
+        utcnow = datetime.utcnow()
+        time_format = utcnow.strftime("%x %X UTC")
+
+        await msg_to_owner(bot, f"Reconnected at {time_format}!")
+
+    bot.init_load = False
     
 @bot.check
 async def block_dms(ctx):
@@ -64,4 +75,5 @@ async def on_command_error(ctx, error):
     else:
         await error_handle(bot, error, ctx)
 
+bot.init_load = True
 bot.run(os.environ.get("MAIN_TOKEN"))
