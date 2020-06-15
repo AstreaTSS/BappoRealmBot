@@ -65,7 +65,7 @@ async def on_command_error(ctx, error):
         original = error.original
         if not isinstance(original, discord.HTTPException):
             await error_handle(bot, error, ctx)
-    elif isinstance(error, (commands.ConversionError, commands.UserInputError)):
+    elif isinstance(error, (commands.ConversionError, commands.UserInputError, commands.CommandOnCooldown)):
         await ctx.send(error)
     elif isinstance(error, commands.CheckFailure):
         if ctx.guild != None:
