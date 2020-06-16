@@ -16,7 +16,7 @@ class Playerlist(commands.Cog):
             "Accept-Language": "en-US"
         }
 
-        xuid = xuid.replace("%27", "")
+        xuid = str(xuid).replace("%27", "")
 
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(f"https://xbl.io/api/v2/account/{xuid}") as r:
@@ -49,7 +49,7 @@ class Playerlist(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.default)
     async def playerlist(self, ctx):
 
-        if self.bot.gamertags.keys() == {}:
+        if self.bot.gamertags == {}:
             await ctx.send("This will probably take a long time as the bot does not have a gamertag cache. Please be patient.")
         else:
             await ctx.send("This might take a bit. Please be patient.")
