@@ -24,8 +24,9 @@ async def on_ready():
     if bot.init_load == True:
         bot.gamertags = {}
 
-        cogs_list = ["cogs.countdown", "cogs.etc", "cogs.general_cmds", "cogs.kick_unverified",
-        "cogs.mod_cmds", "cogs.remove_warnings", "cogs.say_cmds", "cogs.playerlist"]
+        cogs_list = ["cogs.events.countdown", "cogs.events.etc", "cogs.cmds.general_cmds", "cogs.events.kick_unverified",
+        "cogs.cmds.mod_cmds", "cogs.events.remove_warnings", "cogs.cmds.say_cmds", "cogs.cmds.playerlist", 
+        "cogs.owner.cog_control", "cogs.owner.eval_cmd"]
 
         for cog in cogs_list:
             bot.load_extension(cog)

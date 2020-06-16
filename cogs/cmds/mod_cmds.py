@@ -15,6 +15,8 @@ class ModCMDS(commands.Cog):
             "Accept-Language": "en-US"
         }
 
+        mem_gt_url = mem_gt_url.replace("%27", "")
+
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get("https://xbl.io/api/v2/friends/search",params=f"gt={mem_gt_url}") as r:
                 resp_json = await r.json()

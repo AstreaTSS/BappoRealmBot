@@ -34,36 +34,30 @@ class RemoveWarnings(commands.Cog):
                 if sleep_time > 0:
                     await asyncio.sleep(sleep_time)
 
-            current_time = datetime.datetime.utcnow().timestamp()
-            thirty_days_ago = current_time - 2592000
-            thirty_days_dt = datetime.datetime.fromtimestamp(thirty_days_ago)
+            current_time = datetime.datetime.utcnow()
+            thirty_days = datetime.timedelta(days=30)
+            thirty_days_ago = current_time - thirty_days
 
             guild = self.bot.get_guild(596183975953825792)
 
             warning_1 = guild.get_role(623546673615994891)
             warning_2 = guild.get_role(623546740917927975)
             warning_3 = guild.get_role(623546743212212236)
+            warning_roles = [warning_1, warning_2, warning_3]
 
-            dict_members = {}
+            members_with_warns = {}
 
-            entries = await guild.audit_logs(limit=None, after=thirty_days_dt, oldest_first = False, action=discord.AuditLogAction.member_role_update).flatten()
+            entries = await guild.audit_logs(limit=None, after=thirty_days_ago, oldest_first = False, action=discord.AuditLogAction.member_role_update).flatten()
 
             for entry in entries:
                 if type(entry.target) is discord.Member and entry.after.roles != None:
-                    if not entry.target in dict_members.keys():
-                        dict_members[entry.target] = []
+                    if not entry.target in members_with_warns.keys():
+                        members_with_warns[entry.target] = []
 
-                    if warning_1 in entry.after.roles and not warning_1 in dict_members[entry.target]:
-                        await self.check_and_remove(entry.target, warning_1)
-                        dict_members[entry.target].append(warning_1)
-                    if warning_2 in entry.after.roles and not warning_2 in dict_members[entry.target]:
-                        await self.check_and_remove(entry.target, warning_2)
-                        dict_members[entry.target].append(warning_2)
-                    if warning_3 in entry.after.roles and not warning_3 in dict_members[entry.target]:
-                        await self.check_and_remove(entry.target, warning_3)
-                        dict_members[entry.target].append(warning_3)
-
-
+                    for warning in warning_roles:
+                        if warning in entry.after.roles and not warning in members_with_warns[entry.target]:
+                            await self.check_and_remove(entry.target, warning)
+                            members_with_warns[entry.target].append(warning)
 
 def setup(bot):
     bot.add_cog(RemoveWarnings(bot))
