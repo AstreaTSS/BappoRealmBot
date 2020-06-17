@@ -6,7 +6,7 @@ class GeneralCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def pastebin_cache(self, season, title, content):
+    async def pastebin_cache(self, season):
         current_time = datetime.datetime.utcnow()
 
         if season in self.bot.pastebins.keys():
@@ -17,14 +17,8 @@ class GeneralCMDS(commands.Cog):
 
             if entry["time"] > four_hours_ago:
                 return entry["url"]
-        
-        url = self.post_paste(time, content)
-        self.bot.pastebins[season] = {
-            "url": url,
-            "time": current_time
-        }
 
-        return url
+        return None
 
     async def post_paste(self, title, content):
         headers = {
@@ -82,26 +76,34 @@ class GeneralCMDS(commands.Cog):
         
         await mes.edit(content=f"Pong!\n`{ping_discord}` ms from Discord.\n`{ping_personal}` ms personally.")
 
-    @commands.command()
+    @commands.command(aliases=["check_season", "season_stats"])
     async def check_stats(self, ctx, season):
         season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
         if season_x_role == None:
             await ctx.send("Invalid season number!")
         else:
-            count = 0
-            list_of_people = []
+            cache_url = self.pastebin_cache(season)
+            if cache_url != None:
+                url = cache_url
+            else:
+                count = 0
+                list_of_people = []
 
-            for member in ctx.guild.members:
-                if season_x_role in member.roles:
-                    count += 1
-                    list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
+                for member in ctx.guild.members:
+                    if season_x_role in member.roles:
+                        count += 1
+                        list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
 
-            title = f"Query about people in Season {season}"
-            str_of_people = ""
-            for name in list_of_people:
-                str_of_people += name + "\n"
+                title = f"Query about people in Season {season}"
+                str_of_people = ""
+                for name in list_of_people:
+                    str_of_people += name + "\n"
 
-            url = await self.pastebin_cache(season, title, str_of_people)
+                url = await self.post_paste(title, str_of_people)
+                self.bot.pastebins[season] = {
+                    "time": datetime.datetime.utcnow(),
+                    "url": url
+                }
 
             stats_embed = discord.Embed(
                 title = f"There are {count} people that have the Season {season} Badge.", 
