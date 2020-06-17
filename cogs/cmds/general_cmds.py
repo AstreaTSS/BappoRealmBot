@@ -16,7 +16,7 @@ class GeneralCMDS(commands.Cog):
             four_hours_ago = current_time - four_hours
 
             if entry["time"] > four_hours_ago:
-                return entry["url"]
+                return entry
 
         return None
 
@@ -82,9 +82,10 @@ class GeneralCMDS(commands.Cog):
         if season_x_role == None:
             await ctx.send("Invalid season number!")
         else:
-            cache_url = self.pastebin_cache(season)
-            if cache_url != None:
-                url = cache_url
+            cache = self.pastebin_cache(season)
+            if cache != None:
+                url = cache["url"]
+                count = cache["count"]
             else:
                 count = 0
                 list_of_people = []
@@ -102,7 +103,8 @@ class GeneralCMDS(commands.Cog):
                 url = await self.post_paste(title, str_of_people)
                 self.bot.pastebins[season] = {
                     "time": datetime.datetime.utcnow(),
-                    "url": url
+                    "url": url,
+                    "count": count
                 }
 
             stats_embed = discord.Embed(
