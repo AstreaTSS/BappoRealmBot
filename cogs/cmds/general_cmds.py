@@ -97,11 +97,11 @@ class GeneralCMDS(commands.Cog):
                     list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
 
             title = f"Query about people in Season {season}"
-            mes_of_people = ""
+            str_of_people = ""
             for name in list_of_people:
-                mes_of_people += name + "\n"
+                str_of_people += name + "\n"
 
-            url = await self.pastebin_cache(season, title, mes_of_people)
+            url = await self.pastebin_cache(season, title, str_of_people)
 
             stats_embed = discord.Embed(
                 title = f"There are {count} people that have the Season {season} Badge.", 
