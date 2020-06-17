@@ -23,6 +23,7 @@ async def on_ready():
 
     if bot.init_load == True:
         bot.gamertags = {}
+        bot.pastebins = {}
 
         cogs_list = ["cogs.events.countdown", "cogs.events.etc", "cogs.cmds.general_cmds", "cogs.events.kick_unverified",
         "cogs.cmds.mod_cmds", "cogs.events.remove_warnings", "cogs.cmds.say_cmds", "cogs.cmds.playerlist", 

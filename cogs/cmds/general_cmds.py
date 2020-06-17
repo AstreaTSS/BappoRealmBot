@@ -1,23 +1,55 @@
 from discord.ext import commands
-import discord, re, time, os, aiohttp
+import discord, re, time, os
+import aiohttp, json, datetime
 
 class GeneralCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def post_paste(self, content):
+    async def pastebin_cache(self, season, title, content):
+        current_time = datetime.datetime.utcnow()
 
-        posters = {
-            "api_dev_key": os.environ.get("PASTEBIN_KEY"), 
-            "api_option": "paste", 
-            "api_paste_code": content
+        if season in self.bot.pastebins.keys():
+            entry = self.bot.pastebins[season]
+
+            four_hours = datetime.timedelta(hours=4)
+            four_hours_ago = current_time - four_hours
+
+            if entry["time"] > four_hours_ago:
+                return entry["url"]
+        
+        url = self.post_paste(time, content)
+        self.bot.pastebins[season] = {
+            "url": url,
+            "time": current_time
         }
-        url = "https://pastebin.com/api/api_post.php"
 
+        return url
+
+    async def post_paste(self, title, content):
+        headers = {
+            "Authorization": f"Token {os.environ.get('GLOT_KEY')}",
+            "Content-type": "application/json",
+        }
+        data = {
+            "language": "plaintext",
+            "title": f"{title}",
+            "public": False,
+            "files": [
+                {
+                    "name": "main.txt",
+                    "content": f"{content}"
+                }
+            ]
+        }
+        url = "https://snippets.glot.io/snippets"
+        
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=posters) as resp:
+            async with session.post(url, headers=headers, data=json.dumps(data)) as resp:
                 if resp.status == 200:
-                    return await resp.text()
+                    resp_json = await resp.json()
+                    snippet_id = resp_json["id"]
+                    return f"https://glot.io/snippets/{snippet_id}"
                 else:
                     print(resp.status)
                     print(await resp.text())
@@ -64,11 +96,12 @@ class GeneralCMDS(commands.Cog):
                     count += 1
                     list_of_people.append(f"{member.display_name} || {member.name}#{member.discriminator} || {member.id}")
 
-            mes_of_people = f"Query about people in Season {season}:\n"
+            title = f"Query about people in Season {season}"
+            mes_of_people = ""
             for name in list_of_people:
                 mes_of_people += name + "\n"
 
-            url = await self.post_paste(mes_of_people)
+            url = await self.pastebin_cache(season, title, mes_of_people)
 
             stats_embed = discord.Embed(
                 title = f"There are {count} people that have the Season {season} Badge.", 
