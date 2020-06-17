@@ -82,7 +82,7 @@ class GeneralCMDS(commands.Cog):
         if season_x_role == None:
             await ctx.send("Invalid season number!")
         else:
-            cache = self.pastebin_cache(season)
+            cache = await self.pastebin_cache(season)
             if cache != None:
                 url = cache["url"]
                 count = cache["count"]
