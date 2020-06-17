@@ -35,8 +35,12 @@ class RemoveWarnings(commands.Cog):
                     await asyncio.sleep(sleep_time)
 
             current_time = datetime.datetime.utcnow()
+
             thirty_days = datetime.timedelta(days=30)
             thirty_days_ago = current_time - thirty_days
+
+            thirty_two_days = datetime.timedelta(days=32)
+            thirty_two_days_ago = current_time - thirty_two_days
 
             guild = self.bot.get_guild(596183975953825792)
 
@@ -47,7 +51,8 @@ class RemoveWarnings(commands.Cog):
 
             members_with_warns = {}
 
-            entries = await guild.audit_logs(limit=None, after=thirty_days_ago, oldest_first = False, action=discord.AuditLogAction.member_role_update).flatten()
+            entries = await guild.audit_logs(limit=None, before=thirty_two_days_ago, after=thirty_days_ago, oldest_first = False, 
+            action=discord.AuditLogAction.member_role_update).flatten()
 
             for entry in entries:
                 if type(entry.target) is discord.Member and entry.after.roles != None:
