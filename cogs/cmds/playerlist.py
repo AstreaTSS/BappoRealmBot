@@ -5,18 +5,18 @@ import urllib.parse, aiohttp, os, datetime
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.playlist_loop.start()
+        self.playerlist_loop.start()
 
     def cog_unload(self):
-        self.playlist_loop.cancel()
+        self.playerlist_loop.cancel()
 
     @tasks.loop(hours=1)
-    async def playlist_loop(self):
+    async def playerlist_loop(self):
         chan = self.bot.get_channel(724355887942074509) # playerlist channel
         list_cmd = self.bot.get_command("playerlist")
 
         mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
-        a_ctx = await bot.get_context(mes)
+        a_ctx = await self.bot.get_context(mes)
         
         await a_ctx.invoke(list_cmd)
 
