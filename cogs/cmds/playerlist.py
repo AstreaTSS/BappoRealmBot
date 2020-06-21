@@ -1,10 +1,24 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 import discord, cogs.cmd_checks, re
 import urllib.parse, aiohttp, os, datetime
 
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.playlist_loop.start()
+
+    def cog_unload(self):
+        self.playlist_loop.cancel()
+
+    @tasks.loop(hours=1)
+    async def playlist_loop(self):
+        chan = self.bot.get_channel(724355887942074509) # playerlist channel
+        list_cmd = self.bot.get_command("playerlist")
+
+        mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
+        a_ctx = await bot.get_context(mes)
+        
+        await a_ctx.invoke(list_cmd)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
@@ -20,18 +34,21 @@ class Playerlist(commands.Cog):
 
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(f"https://xbl.io/api/v2/account/{xuid}") as r:
-                resp_json = await r.json()
-                if "code" in resp_json.keys():
+                try:
+                    resp_json = await r.json()
+                    if "code" in resp_json.keys():
+                        return f"User with xuid {xuid}"
+                    else:
+                        settings = {}
+                        for setting in resp_json["profileUsers"][0]["settings"]:
+                            settings[setting["id"]] = setting["value"]
+
+                        gamertag = settings["Gamertag"]
+
+                        self.bot.gamertags[xuid] = gamertag
+                        return gamertag
+                except aiohttp.client_exceptions.ContentTypeError:
                     return f"User with xuid {xuid}"
-                else:
-                    settings = {}
-                    for setting in resp_json["profileUsers"][0]["settings"]:
-                        settings[setting["id"]] = setting["value"]
-
-                    gamertag = settings["Gamertag"]
-
-                    self.bot.gamertags[xuid] = gamertag
-                    return gamertag
     
     async def bappo_club_get(self):
         headers = {

@@ -29,7 +29,7 @@ class ModCMDS(commands.Cog):
                     
                     if settings["XboxOneRep"] != "GoodPlayer":
                         return (f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! " +
-                        "Be careful!A mod must bypass this check for the user to be verified.")
+                        "Be careful! A mod must bypass this check for the user to be verified.")
                     elif settings["Gamerscore"] == "0":
                         return (f"WARNING: {user.mention}'s gamertag exists, but has no gamerscore! " +
                         "This is probably a new user, so be careful! A mod must bypass this check for " +
