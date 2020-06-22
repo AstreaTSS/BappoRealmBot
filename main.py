@@ -73,7 +73,7 @@ async def on_command_error(ctx, error):
         if ctx.guild != None:
             await ctx.send("You do not have the proper permissions to use that command.")
     elif isinstance(error, commands.CommandNotFound):
-        pass
+        return
     else:
         await error_handle(bot, error, ctx)
 

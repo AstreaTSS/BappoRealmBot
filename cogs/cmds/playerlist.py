@@ -18,7 +18,7 @@ class Playerlist(commands.Cog):
         mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
         a_ctx = await self.bot.get_context(mes)
         
-        await a_ctx.invoke(list_cmd)
+        await a_ctx.invoke(list_cmd, no_init_mes=True, limited=True)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
@@ -64,17 +64,23 @@ class Playerlist(commands.Cog):
     @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
     @commands.check(cogs.cmd_checks.is_mod_or_up)
     @commands.cooldown(1, 300, commands.BucketType.default)
-    async def playerlist(self, ctx):
+    async def playerlist(self, ctx, **kwargs):
 
-        if self.bot.gamertags == {}:
-            await ctx.send("This will probably take a long time as the bot does not have a gamertag cache. Please be patient.")
-        else:
-            await ctx.send("This might take a bit. Please be patient.")
+        if not "no_init_mes" in kwargs.keys():
+            if self.bot.gamertags == {}:
+                await ctx.send("This will probably take a long time as the bot does not have a gamertag cache. Please be patient.")
+            else:
+                await ctx.send("This might take a bit. Please be patient.")
 
         async with ctx.channel.typing():
             now = datetime.datetime.utcnow()
-            day_delta = datetime.timedelta(days = 1)
-            day_ago = now - day_delta
+
+            if not "limited" in kwargs.keys():
+                time_delta = datetime.timedelta(days = 1)
+            else:
+                time_delta = datetime.timedelta(hours = 2)
+
+            time_ago = now - time_delta
 
             online_list = []
             offline_list = []
@@ -83,7 +89,7 @@ class Playerlist(commands.Cog):
             for member in club_presence:
                 last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
 
-                if last_seen > day_ago:
+                if last_seen > time_ago:
                     gamertag = await self.gamertag_handler(member["xuid"])
                     if member["lastSeenState"] == "InGame":
                         online_list.append(f"{gamertag}")
@@ -100,12 +106,21 @@ class Playerlist(commands.Cog):
 
         if offline_list != []:
             if len(offline_list) < 20:
-                offline_str = "```\nOther people on in the last 24 hours:\n\n"
+                if not "limited" in kwargs.keys():
+                    offline_str = "```\nOther people on in the last 24 hours:\n\n"
+                else:
+                    offline_str = "```\nOther people on in the last 2 hours:\n\n"
+
                 offline_str += "\n".join(offline_list)
                 await ctx.send(offline_str + "\n```")
             else:
                 chunks = [offline_list[x:x+20] for x in range(0, len(offline_list), 20)]
-                first_offline_str = "```\nOther people on in the last 24 hours:\n\n" + "\n".join(chunks[0]) + "\n```"
+
+                if not "limited" in kwargs.keys():
+                    first_offline_str = "```\nOther people on in the last 24 hours:\n\n" + "\n".join(chunks[0]) + "\n```"
+                else:
+                    first_offline_str = "```\nOther people on in the last 2 hours:\n\n" + "\n".join(chunks[0]) + "\n```"
+                    
                 await ctx.send(first_offline_str)
 
                 for x in range(len(chunks)):
