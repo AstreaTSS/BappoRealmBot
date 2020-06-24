@@ -36,14 +36,14 @@ class ETC(commands.Cog):
             if rand_chance == 49:
                 await mes.add_reaction("🍍")
         else:
-            if bot.msg_count == None:
+            if self.bot.msg_count == None:
                 messages = await mes.channel.history(limit=None).flatten()
-                bot.msg_count = len(messages) if len(messages) < 4999 else 4998
+                self.bot.msg_count = len(messages) if len(messages) < 4999 else 4998
             else:
-                if bot.msg_count < 4999:
-                    bot.msg_count += 1
+                if self.bot.msg_count < 4999:
+                    self.bot.msg_count += 1
 
-            rand_chance = random.randint(1, 4999 - bot.msg_count)
+            rand_chance = random.randint(1, 4999 - self.bot.msg_count)
             if rand_chance == 1:
                 await mes.add_reaction("🍍")
 
