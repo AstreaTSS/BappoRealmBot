@@ -1,16 +1,15 @@
 from discord.ext import commands, tasks
-import discord, cogs.cmd_checks, re
+import discord, cogs.cmd_checks, re, asyncio
 import urllib.parse, aiohttp, os, datetime
 
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.playerlist_loop.start()
+        self.bot.pltask = self.bot.loop.create_task(self.playerlist_loop())
 
     def cog_unload(self):
-        self.playerlist_loop.cancel()
+        self.bot.pltask.cancel()
 
-    @tasks.loop(hours=1)
     async def playerlist_loop(self):
         chan = self.bot.get_channel(724355887942074509) # playerlist channel
         list_cmd = self.bot.get_command("playerlist")
@@ -19,6 +18,8 @@ class Playerlist(commands.Cog):
         a_ctx = await self.bot.get_context(mes)
         
         await a_ctx.invoke(list_cmd, no_init_mes=True, limited=True)
+
+        await asyncio.sleep(3600)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
