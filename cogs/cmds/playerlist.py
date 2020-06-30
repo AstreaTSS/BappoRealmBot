@@ -5,11 +5,12 @@ import urllib.parse, aiohttp, os, datetime
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.pltask = self.bot.loop.create_task(self.playerlist_loop())
+        self.playerlist_loop.start()
 
     def cog_unload(self):
-        self.bot.pltask.cancel()
+        self.playerlist_loop.cancel()
 
+    @tasks.loop(hours=1)
     async def playerlist_loop(self):
         chan = self.bot.get_channel(724355887942074509) # playerlist channel
         list_cmd = self.bot.get_command("playerlist")
@@ -17,9 +18,7 @@ class Playerlist(commands.Cog):
         mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
         a_ctx = await self.bot.get_context(mes)
         
-        await a_ctx.invoke(list_cmd, no_init_mes=True, limited=True)
-
-        await asyncio.sleep(3600)
+        await a_ctx.invoke(list_cmd, limited=True)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
@@ -99,6 +98,9 @@ class Playerlist(commands.Cog):
                         offline_list.append(f"{gamertag}: last seen {time_format}")
                 else:
                     break
+
+        print(online_list)
+        print(offline_list)
         
         if online_list != []:
             online_str = "```\nPeople online right now:\n\n"
