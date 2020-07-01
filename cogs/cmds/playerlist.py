@@ -18,7 +18,7 @@ class Playerlist(commands.Cog):
         mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
         a_ctx = await self.bot.get_context(mes)
         
-        await a_ctx.invoke(list_cmd, limited=True)
+        await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
