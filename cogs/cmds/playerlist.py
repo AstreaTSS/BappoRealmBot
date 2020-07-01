@@ -37,6 +37,7 @@ class Playerlist(commands.Cog):
                 try:
                     resp_json = await r.json()
                     if "code" in resp_json.keys():
+                        print(resp_json)
                         return f"User with xuid {xuid}"
                     else:
                         settings = {}
@@ -48,6 +49,7 @@ class Playerlist(commands.Cog):
                         self.bot.gamertags[xuid] = gamertag
                         return gamertag
                 except aiohttp.client_exceptions.ContentTypeError:
+                    print(await r.text())
                     return f"User with xuid {xuid}"
     
     async def bappo_club_get(self):
