@@ -111,9 +111,6 @@ class Playerlist(commands.Cog):
                         offline_list.append(f"{gamertag}: last seen {time_format}")
                 else:
                     break
-
-        print(online_list)
-        print(offline_list)
         
         if online_list != []:
             online_str = "```\nPeople online right now:\n\n"
