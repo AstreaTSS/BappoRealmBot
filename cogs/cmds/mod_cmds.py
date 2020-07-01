@@ -2,40 +2,48 @@ from discord.ext import commands
 import discord, cogs.cmd_checks, re
 import urllib.parse, aiohttp, os
 
+from xbox.webapi.api.client import XboxLiveClient
+from xbox.webapi.authentication.manager import AuthenticationManager
+from xbox.webapi.common.exceptions import AuthenticationException
+
 class ModCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def auth_mgr_create(self):
+        auth_mgr = await AuthenticationManager.create()
+        auth_mgr.email_address = os.environ.get("XBOX_EMAIL")
+        auth_mgr.password = os.environ.get("XBOX_PASSWORD")
+        await auth_mgr.authenticate()
+        await auth_mgr.close()
+
+        return auth_mgr
+
     async def xbl_handler(self, gamertag, user):
-        mem_gt_url = urllib.parse.quote_plus(gamertag.strip())
+        auth_mgr = await self.auth_mgr_create()
 
-        headers = {
-            "X-Authorization": os.environ.get("OPENXBL_KEY"),
-            "Accept": "application/json",
-            "Accept-Language": "en-US"
-        }
+        mem_gt_url = gamertag
 
-        mem_gt_url = mem_gt_url.replace("%27", "")
+        client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
+        profile = await client.profile.get_profile_by_gamertag(mem_gt_url)
 
-        async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.get("https://xbl.io/api/v2/friends/search",params=f"gt={mem_gt_url}") as r:
-                resp_json = await r.json()
-                if "code" in resp_json.keys():
-                    return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`!"
-                else:
-                    settings = {}
-                    for setting in resp_json["profileUsers"][0]["settings"]:
-                        settings[setting["id"]] = setting["value"]
-                    
-                    if settings["XboxOneRep"] != "GoodPlayer":
-                        return (f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! " +
-                        "Be careful! A mod must bypass this check for the user to be verified.")
-                    elif settings["Gamerscore"] == "0":
-                        return (f"WARNING: {user.mention}'s gamertag exists, but has no gamerscore! " +
-                        "This is probably a new user, so be careful! A mod must bypass this check for " +
-                        "the user to be verified.")
-                    else:
-                        return "OK"
+        resp_json = await profile.json()
+        if "code" in resp_json.keys():
+            return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`!"
+        else:
+            settings = {}
+            for setting in resp_json["profileUsers"][0]["settings"]:
+                settings[setting["id"]] = setting["value"]
+            
+            if settings["XboxOneRep"] != "GoodPlayer":
+                return (f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! " +
+                "Be careful! A mod must bypass this check for the user to be verified.")
+            elif settings["Gamerscore"] == "0":
+                return (f"WARNING: {user.mention}'s gamertag exists, but has no gamerscore! " +
+                "This is probably a new user, so be careful! A mod must bypass this check for " +
+                "the user to be verified.")
+            else:
+                return "OK"
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
