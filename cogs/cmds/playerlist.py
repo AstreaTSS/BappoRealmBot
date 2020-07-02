@@ -16,6 +16,14 @@ class Playerlist(commands.Cog):
     def cog_unload(self):
         self.playerlist_loop.cancel()
 
+    def get_diff_xuids(self, users, list_xuids, new_list_xuids):
+        for xuid in list_xuids:
+            if xuid not in new_list_xuids:
+                index = list_xuids.index(xuid)
+                users.insert(index, "Gamertag not gotten")
+
+        return users
+
     @tasks.loop(hours=1)
     async def playerlist_loop(self):
         chan = self.bot.get_channel(724355887942074509) # playerlist channel
@@ -35,36 +43,24 @@ class Playerlist(commands.Cog):
 
         return auth_mgr
 
-    async def gamertag_handler(self, xuid, xb_client):
-        if xuid in self.bot.gamertags.keys():
-            return self.bot.gamertags[xuid]
+    async def try_until_valid(self, xb_client, list_xuids):
+        profiles = await xb_client.profile.get_profiles(list_xuids)
+        profiles = await profiles.json()
 
-        profile = await xb_client.profile.get_profile_by_xuid(str(xuid))
+        if "code" in profiles.keys():
+            description = profiles["description"]
+            desc_split = description.split(" ")
+            list_xuids.remove(desc_split[1])
 
-        gamertag = f"User with xuid {xuid}"
+            profiles, list_xuids = await self.try_until_valid(xb_client, list_xuids)
+            return profiles, list_xuids
+            
+        elif "limitType" in profiles.keys():
+            await asyncio.sleep(15)
+            profiles, list_xuids = await self.try_until_valid(xb_client, list_xuids)
+            return profiles, list_xuids
 
-        try:
-            resp_json = await profile.json()
-            if "code" in resp_json.keys():
-                print(resp_json)
-            elif "limitType" in resp_json.keys():
-                await asyncio.sleep(15)
-                gamertag = await self.gamertag_handler(xuid, xb_client)
-            else:
-                settings = {}
-                try:
-                    for setting in resp_json["profileUsers"][0]["settings"]:
-                        settings[setting["id"]] = setting["value"]
-
-                    gamertag = settings["Gamertag"]
-
-                    self.bot.gamertags[xuid] = gamertag
-                except KeyError:
-                    print(resp_json)
-        except aiohttp.client_exceptions.ContentTypeError:
-            print(await profile.text())
-
-        return gamertag
+        return profiles, list_xuids
     
     async def bappo_club_get(self, xb_client):
         clubs = ClubsProvider(xb_client)
@@ -94,6 +90,10 @@ class Playerlist(commands.Cog):
 
             time_ago = now - time_delta
 
+            xuid_list = []
+            state_list = []
+            last_seen_list = []
+
             online_list = []
             offline_list = []
 
@@ -104,18 +104,52 @@ class Playerlist(commands.Cog):
 
             for member in club_presence:
                 last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
-
                 if last_seen > time_ago:
-                    gamertag = await self.gamertag_handler(member["xuid"], xb_client)
-                    if member["lastSeenState"] == "InGame":
-                        online_list.append(f"{gamertag}")
-                    else:
-                        time_format = last_seen.strftime("%x %X (%I:%M:%S %p) UTC")
-                        offline_list.append(f"{gamertag}: last seen {time_format}")
+                    xuid_list.append(member["xuid"])
+                    state_list.append(member["lastSeenState"])
+                    last_seen_list.append(last_seen)
                 else:
                     break
+
+            xuid_list_filter = xuid_list.copy()
+            for xuid in xuid_list_filter:
+                if xuid in self.bot.gamertags.keys():
+                    xuid_list_filter.remove(xuid)
+
+            profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
+            users = profiles["profileUsers"]
+            users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
             
             await xb_client.close()
+
+            def add_list(gamertag, state, last_seen):
+                if state == "InGame":
+                    online_list.append(f"{gamertag}")
+                else:
+                    time_format = last_seen.strftime("%x %X (%I:%M:%S %p) UTC")
+                    offline_list.append(f"{gamertag}: last seen {time_format}")
+
+            for i in range(len(xuid_list)):
+                entry = users[i]
+                state = state_list[i]
+                last_seen = last_seen_list[i]
+
+                gamertag = f"User with xuid {xuid_list[i]}"
+
+                if entry == "Gamertag not gotten":
+                    if xuid in self.bot.gamertags.keys():
+                        gamertag = self.bot.gamertags[xuid]
+                else:
+                    try:
+                        settings = {}
+                        for setting in entry["settings"]:
+                            settings[setting["id"]] = setting["value"]
+
+                        gamertag = settings["Gamertag"]
+                    except KeyError:
+                        gamertag = f"User with xuid {xuid_list[i]}"
+
+                add_list(gamertag, state, last_seen)
         
         if online_list != []:
             online_str = "```\nPeople online right now:\n\n"
