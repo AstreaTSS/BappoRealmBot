@@ -54,7 +54,7 @@ class Playerlist(commands.Cog):
 
             profiles, list_xuids = await self.try_until_valid(xb_client, list_xuids)
             return profiles, list_xuids
-            
+
         elif "limitType" in profiles.keys():
             await asyncio.sleep(15)
             profiles, list_xuids = await self.try_until_valid(xb_client, list_xuids)
@@ -137,8 +137,8 @@ class Playerlist(commands.Cog):
                 gamertag = f"User with xuid {xuid_list[i]}"
 
                 if entry == "Gamertag not gotten":
-                    if xuid in self.bot.gamertags.keys():
-                        gamertag = self.bot.gamertags[xuid]
+                    if xuid_list[i] in self.bot.gamertags.keys():
+                        gamertag = self.bot.gamertags[xuid_list[i]]
                 else:
                     try:
                         settings = {}
@@ -146,6 +146,7 @@ class Playerlist(commands.Cog):
                             settings[setting["id"]] = setting["value"]
 
                         gamertag = settings["Gamertag"]
+                        self.bot.gamertags[xuid_list[i]] = gamertag
                     except KeyError:
                         gamertag = f"User with xuid {xuid_list[i]}"
 
