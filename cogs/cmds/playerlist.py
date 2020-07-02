@@ -47,6 +47,9 @@ class Playerlist(commands.Cog):
             resp_json = await profile.json()
             if "code" in resp_json.keys():
                 print(resp_json)
+            elif "limitType" in resp_json.keys():
+                await asyncio.sleep(15)
+                gamertag = await self.gamertag_handler(xuid, xb_client)
             else:
                 settings = {}
                 try:
