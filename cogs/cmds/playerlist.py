@@ -49,12 +49,15 @@ class Playerlist(commands.Cog):
                 print(resp_json)
             else:
                 settings = {}
-                for setting in resp_json["profileUsers"][0]["settings"]:
-                    settings[setting["id"]] = setting["value"]
+                try:
+                    for setting in resp_json["profileUsers"][0]["settings"]:
+                        settings[setting["id"]] = setting["value"]
 
-                gamertag = settings["Gamertag"]
+                    gamertag = settings["Gamertag"]
 
-                self.bot.gamertags[xuid] = gamertag
+                    self.bot.gamertags[xuid] = gamertag
+                except KeyError:
+                    print(resp_json)
         except aiohttp.client_exceptions.ContentTypeError:
             print(await profile.text())
 
