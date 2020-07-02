@@ -71,7 +71,7 @@ class Playerlist(commands.Cog):
 
     @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    @commands.cooldown(1, 300, commands.BucketType.default)
+    @commands.cooldown(1, 60, commands.BucketType.default)
     async def playerlist(self, ctx, **kwargs):
 
         if not "no_init_mes" in kwargs.keys():
