@@ -1,9 +1,12 @@
-import discord, os, traceback
+import discord, os
+import logging, traceback
 from discord.ext import commands
 from datetime import datetime
 
-bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
+log = logging.getLogger('authentication')
+log.setLevel(logging.ERROR)
 
+bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
 bot.remove_command("help")
 
 async def error_handle(bot, error, ctx = None):

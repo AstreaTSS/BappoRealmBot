@@ -1,10 +1,12 @@
 from discord.ext import commands, tasks
-import discord, cogs.cmd_checks, re, asyncio
+import discord, cogs.cmd_checks, asyncio
 import urllib.parse, aiohttp, os, datetime
 
 from xbox.webapi.api.client import XboxLiveClient
 from xbox.webapi.authentication.manager import AuthenticationManager
 from xbox.webapi.common.exceptions import AuthenticationException
+
+from cogs.clubs_handler import ClubsProvider
 
 class Playerlist(commands.Cog):
     def __init__(self, bot):
@@ -33,12 +35,11 @@ class Playerlist(commands.Cog):
 
         return auth_mgr
 
-    async def gamertag_handler(self, xuid, auth_mgr):
+    async def gamertag_handler(self, xuid, xb_client):
         if xuid in self.bot.gamertags.keys():
             return self.bot.gamertags[xuid]
 
-        client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
-        profile = await client.profile.get_profile_by_xuid(str(xuid))
+        profile = await xb_client.profile.get_profile_by_xuid(str(xuid))
 
         gamertag = f"User with xuid {xuid}"
 
@@ -57,20 +58,14 @@ class Playerlist(commands.Cog):
         except aiohttp.client_exceptions.ContentTypeError:
             print(await profile.text())
 
-        await client.close()
-
         return gamertag
     
-    async def bappo_club_get(self):
-        headers = {
-            "X-Auth": os.environ.get("XAPI_KEY"),
-            "Content-Type": "application/json",
-            "Accept-Language": "en-US"
-        }
-        async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.get(f"https://xapi.us/v2/clubs/details/3379884873194657") as r:
-                resp_json = await r.json()
-                return resp_json["clubs"][0]["clubPresence"]
+    async def bappo_club_get(self, xb_client):
+        clubs = ClubsProvider(xb_client)
+
+        club = await clubs.get_club_user_presence(3379884873194657)
+        resp_json = await club.json()
+        return resp_json["clubs"][0]["clubPresence"]
 
     @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
     @commands.check(cogs.cmd_checks.is_mod_or_up)
@@ -95,15 +90,17 @@ class Playerlist(commands.Cog):
 
             online_list = []
             offline_list = []
-            club_presence = await self.bappo_club_get()
 
             auth_mgr = await self.auth_mgr_create()
+            xb_client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
+
+            club_presence = await self.bappo_club_get(xb_client)
 
             for member in club_presence:
                 last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
 
                 if last_seen > time_ago:
-                    gamertag = await self.gamertag_handler(member["xuid"], auth_mgr)
+                    gamertag = await self.gamertag_handler(member["xuid"], xb_client)
                     if member["lastSeenState"] == "InGame":
                         online_list.append(f"{gamertag}")
                     else:
@@ -111,6 +108,8 @@ class Playerlist(commands.Cog):
                         offline_list.append(f"{gamertag}: last seen {time_format}")
                 else:
                     break
+            
+            await xb_client.close()
         
         if online_list != []:
             online_str = "```\nPeople online right now:\n\n"
