@@ -98,29 +98,34 @@ class Playerlist(commands.Cog):
             offline_list = []
 
             auth_mgr = await self.auth_mgr_create()
-            xb_client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
 
-            club_presence = await self.bappo_club_get(xb_client)
+            try:
+                xb_client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
 
-            for member in club_presence:
-                last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
-                if last_seen > time_ago:
-                    xuid_list.append(member["xuid"])
-                    state_list.append(member["lastSeenState"])
-                    last_seen_list.append(last_seen)
-                else:
-                    break
+                club_presence = await self.bappo_club_get(xb_client)
 
-            xuid_list_filter = xuid_list.copy()
-            for xuid in xuid_list_filter:
-                if xuid in self.bot.gamertags.keys():
-                    xuid_list_filter.remove(xuid)
+                for member in club_presence:
+                    last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
+                    if last_seen > time_ago:
+                        xuid_list.append(member["xuid"])
+                        state_list.append(member["lastSeenState"])
+                        last_seen_list.append(last_seen)
+                    else:
+                        break
 
-            profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
-            users = profiles["profileUsers"]
-            users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
-            
-            await xb_client.close()
+                xuid_list_filter = xuid_list.copy()
+                for xuid in xuid_list_filter:
+                    if xuid in self.bot.gamertags.keys():
+                        xuid_list_filter.remove(xuid)
+
+                profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
+                users = profiles["profileUsers"]
+                users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
+
+                await xb_client.close()
+            except BaseException:
+                await xb_client.close()
+                raise
 
             def add_list(gamertag, state, last_seen):
                 if state == "InGame":
@@ -181,7 +186,7 @@ class Playerlist(commands.Cog):
                         continue
                     
                     offline_chunk_str = "```\n" + "\n".join(chunks[x]) + "\n```"
-                    await ctx.send(offline_chunk_str)
+                    await ctx.send(offline_chunk_str)    
 
 def setup(bot):
     bot.add_cog(Playerlist(bot))
