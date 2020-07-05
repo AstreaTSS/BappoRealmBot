@@ -27,6 +27,17 @@ class ETC(commands.Cog):
             await verify_channel.send(verify_start + verify_questions)
 
     @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        if type(channel) != discord.TextChannel:
+            return
+
+        if channel.category != None:
+            if channel.category.id == 631591280979214346 and channel.name.startswith("tickets"):
+                moderator = discord.utils.get(channel.guild.roles, name='Moderator')
+                await channel.send(f"{moderator.mention}")
+
+
+    @commands.Cog.listener()
     async def on_message(self, mes):
         if mes.guild == None:
             return
