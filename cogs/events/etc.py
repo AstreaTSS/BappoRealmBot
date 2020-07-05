@@ -32,7 +32,7 @@ class ETC(commands.Cog):
             return
 
         if channel.category != None:
-            if channel.category.id == 631591280979214346 and channel.name.startswith("tickets"):
+            if channel.category.id == 631591280979214346 and channel.name.startswith("ticket"):
                 moderator = discord.utils.get(channel.guild.roles, name='Moderator')
                 await channel.send(f"{moderator.mention}")
 
