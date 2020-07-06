@@ -62,7 +62,7 @@ class SlowPlayerlist(commands.Cog):
                 resp_json = await r.json()
                 return resp_json["clubs"][0]["clubPresence"]
 
-    @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
+    @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
     @commands.cooldown(1, 150, commands.BucketType.default)
     async def slow_playerlist(self, ctx, **kwargs):
