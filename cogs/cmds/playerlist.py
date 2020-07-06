@@ -1,4 +1,4 @@
-from discord.ext import commands, tasks
+from discord.ext import commands
 import discord, cogs.cmd_checks, asyncio
 import urllib.parse, aiohttp, os, datetime
 
@@ -11,10 +11,6 @@ from cogs.clubs_handler import ClubsProvider
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.playerlist_loop.start()
-
-    def cog_unload(self):
-        self.playerlist_loop.cancel()
 
     def get_diff_xuids(self, users, list_xuids, new_list_xuids):
         for xuid in list_xuids:
@@ -23,16 +19,6 @@ class Playerlist(commands.Cog):
                 users.insert(index, "Gamertag not gotten")
 
         return users
-
-    @tasks.loop(hours=1)
-    async def playerlist_loop(self):
-        chan = self.bot.get_channel(724355887942074509) # playerlist channel
-        list_cmd = self.bot.get_command("playerlist")
-
-        mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
-        a_ctx = await self.bot.get_context(mes)
-        
-        await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
 
     async def auth_mgr_create(self):
         auth_mgr = await AuthenticationManager.create()
