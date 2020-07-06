@@ -30,7 +30,7 @@ async def on_ready():
 
         cogs_list = ["cogs.events.countdown", "cogs.events.etc", "cogs.cmds.general_cmds", "cogs.events.kick_unverified",
         "cogs.cmds.mod_cmds", "cogs.events.remove_warnings", "cogs.cmds.say_cmds", "cogs.cmds.playerlist", 
-        "cogs.eval_cmd"]
+        "cogs.eval_cmd", "cogs.cmds.slow_playerlist"]
 
         for cog in cogs_list:
             bot.load_extension(cog)
