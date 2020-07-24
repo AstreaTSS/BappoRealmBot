@@ -5,20 +5,19 @@ import urllib.parse, aiohttp, os, datetime
 class SlowPlayerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.playerlist_loop.start()
+        self.loop.create_task(self.playerlist_loop())
 
-    def cog_unload(self):
-        self.playerlist_loop.cancel()
-
-    @tasks.loop(hours=1)
     async def playerlist_loop(self):
-        chan = self.bot.get_channel(724355887942074509) # playerlist channel
-        list_cmd = self.bot.get_command("slow_playerlist")
+        while 1:
+            chan = self.bot.get_channel(724355887942074509) # playerlist channel
+            list_cmd = self.bot.get_command("slow_playerlist")
 
-        mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
-        a_ctx = await self.bot.get_context(mes)
-        
-        await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
+            mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
+            a_ctx = await self.bot.get_context(mes)
+            
+            await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
+
+            asyncio.sleep(3600)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():

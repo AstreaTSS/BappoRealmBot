@@ -1,2 +1,3 @@
 discord
 https://github.com/kyriog/xbox-webapi-python/archive/aiohttp.zip
+git+https://github.com/jmoiron/humanize.git
