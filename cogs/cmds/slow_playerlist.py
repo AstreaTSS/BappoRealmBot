@@ -17,7 +17,7 @@ class SlowPlayerlist(commands.Cog):
             
             await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
 
-            asyncio.sleep(3600)
+            await asyncio.sleep(3600)
 
     async def gamertag_handler(self, xuid):
         if xuid in self.bot.gamertags.keys():
