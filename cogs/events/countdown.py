@@ -8,13 +8,19 @@ class CountdownCMD(commands.Cog):
 
         self.bot.loop.create_task(self.countdown_check(True))
 
-    def countdown_embed_creator(self, time_difference, countdown):
+    def countdown_embed_creator(self, time_difference, countdown, minimum_unit):
         time_delta = datetime.timedelta(seconds=time_difference)
-        human_time = humanize.precisedelta(time_delta, minimum_unit="hours", format="%0.0f")
+        human_time = humanize.precisedelta(time_delta, minimum_unit=minimum_unit, format="%0.0f")
 
         embed = discord.Embed(title=f"Countdown to {countdown.name}", color=countdown.color)
 
-        mess_value = f"There is/are {human_time} until {countdown.name}!"
+        is_or_are = "are"
+
+        first_elem = human_time.split(" ")[-1]
+        if int(first_elem) == 1:
+            is_or_are = "is"
+
+        mess_value = f"There {is_or_are} **{human_time}** until {countdown.name}!"
 
         embed.add_field(name="Time Till", value=mess_value)
 
@@ -50,7 +56,7 @@ class CountdownCMD(commands.Cog):
             time_difference = countdown.time - current_time
 
             if (time_difference > 0):
-                embed = self.countdown_embed_creator(time_difference, countdown)
+                embed = self.countdown_embed_creator(time_difference, countdown, "minutes")
                 await ctx.send(embed=embed)
 
     async def countdown_check(self, loop):
@@ -101,7 +107,7 @@ class CountdownCMD(commands.Cog):
                     time_difference = countdown.time - round_to_hour
 
                     if (time_difference > 0):
-                        embed = self.countdown_embed_creator(time_difference, countdown)
+                        embed = self.countdown_embed_creator(time_difference, countdown, "hours")
                         channel = await self.bot.fetch_channel(countdown.channel_id)
                         await channel.send(embed=embed)
 
