@@ -16,7 +16,7 @@ class CountdownCMD(commands.Cog):
 
         is_or_are = "are"
 
-        first_elem = human_time.split(" ")[-1]
+        first_elem = human_time.split(" ")[0]
         if int(first_elem) == 1:
             is_or_are = "is"
 
