@@ -46,7 +46,7 @@ async def on_ready():
     utcnow = datetime.utcnow()
     time_format = utcnow.strftime("%x %X UTC")
 
-    connect_str = "Connected" if not bot.init_load else "Reconnected"
+    connect_str = "Connected" if bot.init_load else "Reconnected"
 
     await msg_to_owner(bot, f"{connect_str} at `{time_format}`!")
 
