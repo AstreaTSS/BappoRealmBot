@@ -130,10 +130,12 @@ class ModCMDS(commands.Cog):
             return user == ctx.author and str(reaction) in ("✅", "❌") and reaction.message.id == msg.id
 
         async def archive_cancel():
-            await msg.edit(content="This command has been cancelled.")
+            await msg.delete()
+
+            new_msg = await ctx.edit(content="This command has been cancelled.")
             await asyncio.sleep(5)
 
-            await msg.delete()
+            await new_msg.delete()
             await ctx.message.delete()
 
         try:
@@ -148,19 +150,14 @@ class ModCMDS(commands.Cog):
                 if archive_cata != None:
                     await msg.delete()
 
-                    if ctx.invoked_with.lower() == "archive":
-                        await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
-                        reason=f"Moved to The Archives by {str(ctx.author)}.")
-                        await ctx.send("Moved to The Archives.")
+                    action = "Moved"
 
-                    elif ctx.invoked_with.lower() == "yeet":
-                        await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
-                        reason=f"Yeeted to The Archives by {str(ctx.author)}.")
-                        await ctx.send("Yeeted to The Archives.")
+                    if ctx.invoked_with.lower() == "yeet":
+                        action = "Yeeted"
 
-                    else:
-                        await ctx.send("A rare error happened. Tell Sonic it had something to due with 'invoked_with' or something.")
-                        return
+                    await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
+                        reason=f"{action} to The Archives by {str(ctx.author)}.")
+                    await ctx.send(f"{action} to The Archives.")
 
                 else:
                     await msg.delete()
