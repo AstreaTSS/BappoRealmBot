@@ -1,6 +1,6 @@
 from discord.ext import commands
 import asyncio, datetime, cogs.cmd_checks
-import discord, math
+import discord, math, collections
 
 class KickUnverified(commands.Cog):
     def __init__(self, bot):
@@ -33,7 +33,7 @@ class KickUnverified(commands.Cog):
             current_time = datetime.datetime.utcnow().timestamp()
             two_days_ago = current_time - 172800
 
-            unverified = []
+            unverified = collections.deque()
 
             guild = self.bot.get_guild(596183975953825792)
             guild_members = guild.members
@@ -47,9 +47,9 @@ class KickUnverified(commands.Cog):
             for member in unverified:
                 if member.joined_at.timestamp() < two_days_ago:
                     try:
-                        await member.send("You have taken too long to do the verification questions, and have been kicked for doing so. " +
-                        "If you are still interested in joining the Bappo Realm,  please contact the original inviter to get an " +
-                        "invite or use the invite you used previously (for security reasons, the bot cannot give you one).")
+                        await member.send("".join(("You have taken too long to do the verification questions, and have been kicked for doing so. ",
+                        "If you are still interested in joining the Bappo Realm,  please contact the original inviter to get an ",
+                        "invite or use the invite you used previously (for security reasons, the bot cannot give you one).")))
                     except discord.Forbidden:
                         application = await self.bot.application_info()
                         owner = application.owner

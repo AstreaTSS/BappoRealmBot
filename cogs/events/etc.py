@@ -13,16 +13,16 @@ class ETC(commands.Cog):
             verify_channel = discord.utils.get(member.guild.channels, name='verify')
             gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
-            verify_start = (f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have " +
-            "noticed that there's not a lot of channels. Well, that's because you have to be verified. " +
-            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}.\n" +
-            f"A {gatekeeper.mention} will then verify you, but this is a manual process, so it might take a while.\n\n")
+            verify_start = "".join((f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have ",
+            "noticed that there's not a lot of channels. Well, that's because you have to be verified. ",
+            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}.\n",
+            f"A {gatekeeper.mention} will then verify you, but this is a manual process, so it might take a while.\n\n"))
 
-            verify_questions = ("```\nVerification Questions:\n\n" +
-            "1. How did you find this Realm?\n\n" +
-            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'for years'.)\n\n" +
-            "3. What platform/device do you play on?\n\n" +
-            "4. What is RULE 3 of this server?\n```")
+            verify_questions = "".join(("```\nVerification Questions:\n\n",
+            "1. How did you find this Realm?\n\n",
+            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'for years'.)\n\n",
+            "3. What platform/device do you play on?\n\n",
+            "4. What is RULE 3 of this server?\n```"))
 
             await verify_channel.send(verify_start + verify_questions)
 
@@ -33,9 +33,8 @@ class ETC(commands.Cog):
 
         if channel.category != None:
             if channel.category.id == 631591280979214346 and channel.name.startswith("ticket"):
-                moderator = discord.utils.get(channel.guild.roles, name='Moderator')
-                await channel.send(f"{moderator.mention}")
-
+                everyone_role = channel.guild.default_role
+                await channel.send(f"{everyone_role.mention}")
 
     @commands.Cog.listener()
     async def on_message(self, mes):

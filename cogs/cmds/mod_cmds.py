@@ -1,6 +1,6 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks, re
-import urllib.parse, aiohttp, os
+import discord, cogs.cmd_checks, re, asyncio
+import urllib.parse, aiohttp, os, collections
 
 from xbox.webapi.api.client import XboxLiveClient
 from xbox.webapi.authentication.manager import AuthenticationManager
@@ -26,6 +26,7 @@ class ModCMDS(commands.Cog):
 
         client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
         profile = await client.profile.get_profile_by_gamertag(mem_gt_url)
+        await client.close()
 
         resp_json = await profile.json()
         if "code" in resp_json.keys():
@@ -36,25 +37,23 @@ class ModCMDS(commands.Cog):
                 settings[setting["id"]] = setting["value"]
             
             if settings["XboxOneRep"] != "GoodPlayer":
-                return (f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! " +
-                "Be careful! A mod must bypass this check for the user to be verified.")
+                return "".join((f"WARNING: {user.mention}'s gamertag exists, but doesn't have the best reputation on Xbox Live! ",
+                "Be careful! A mod must bypass this check for the user to be verified."))
             elif settings["Gamerscore"] == "0":
-                return (f"WARNING: {user.mention}'s gamertag exists, but has no gamerscore! " +
-                "This is probably a new user, so be careful! A mod must bypass this check for " +
-                "the user to be verified.")
+                return "".join((f"WARNING: {user.mention}'s gamertag exists, but has no gamerscore! ",
+                "This is probably a new user, so be careful! A mod must bypass this check for ",
+                "the user to be verified."))
             else:
                 return "OK"
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def season_add(self, ctx, season, message_id):
-        ori_mess = None
-
+    async def season_add(self, ctx, season, message_id: int):
         try:
-            ori_mess = await ctx.guild.get_channel(596186025630498846).fetch_message(int(message_id))
+            ori_mes = await ctx.guild.get_channel(596186025630498846).fetch_message(message_id)
         except discord.NotFound:
-            await ctx.send("Invalid message ID!")
-        ori_timestamp = ori_mess.created_at.timestamp()
+            await ctx.send("Invalid message ID! Make sure the message itself is in announcements!")
+        ori_timestamp = ori_mes.created_at.timestamp()
 
         guild_members = ctx.guild.members
 
@@ -62,7 +61,7 @@ class ModCMDS(commands.Cog):
         if season_x_role == None:
             await ctx.send("Invalid season number!")
         else:
-            season_x_vets = []
+            season_x_vets = collections.deque()
 
             for member in guild_members:
                 if member.joined_at.timestamp() < ori_timestamp and not member.bot:
@@ -70,32 +69,20 @@ class ModCMDS(commands.Cog):
 
             for vet in season_x_vets:
                 await vet.add_roles(season_x_role)
-                print("Added " + vet.display_name)
 
-            await ctx.send("Done! Added " + str(len(season_x_vets)) + " members!")
-
-    @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
-    async def role_id(self, ctx, *role_name):
-        role = discord.utils.get(ctx.guild.roles, name=role_name)
-        
-        if role == None:
-            await ctx.send("Invalid role name!")
-        else:
-            await ctx.send(str(role.id))
+            await ctx.send(f"Done! Added {len(season_x_vets)} members!")
 
     @commands.command()
     @commands.check(cogs.cmd_checks.is_gatekeeper_or_up)
     async def verify(self, ctx, member: discord.Member, force = None):
         to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
-        member_role = discord.utils.get(ctx.guild.roles, name='Member')
 
         if not to_be_verified in member.roles:
             await ctx.send("This user is already verified!")
             return
 
         if force != None:
-            if force != "-f":
+            if force.lower() != "-f":
                 await ctx.send("Invalid parameter!")
                 return
 
@@ -121,10 +108,59 @@ class ModCMDS(commands.Cog):
                     await ctx.send(f"{status}\n{force_txt}")
                     return
 
+        member_role = discord.utils.get(ctx.guild.roles, name='Member')
+
         await member.remove_roles(to_be_verified)
         await member.add_roles(member_role)
 
         await ctx.send(f"{member.mention} was verified!")
+
+    @commands.command(aliases=["yeet"])
+    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    async def archive(self, ctx):
+        if ctx.channel.category.id != 677212464965877803:
+            await ctx.send("This isn't the Channel Testing Facility!")
+            return
+
+        msg = await ctx.send("Are you sure you want to do this?")
+        await msg.add_reaction("✅") # check mark
+        await msg.add_reaction("❌") # red x
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction) in ("✅", "❌") and reaction.message.id == msg.id
+
+        async def archive_cancel():
+            await msg.edit(content="This command has been cancelled.")
+            await asyncio.sleep(5)
+
+            await msg.delete()
+            await ctx.message.delete()
+
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        except asyncio.TimeoutError:
+            await archive_cancel()
+        else:
+            if str(reaction) == "❌":
+                await archive_cancel()
+            else:
+                archive_cata = discord.utils.find(ctx.guild.categories, id = 683457443996631117) # archive cate
+                if archive_cata != None:
+
+                    if ctx.invoked_with.lower() == "archive":
+                        await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
+                        reason=f"Moved to The Archives.")
+                    elif ctx.invoked_with.lower() == "yeet":
+                        await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
+                        reason=f"Yeeted to The Archives.")
+                    else:
+                        await ctx.send("A rare error happened. Tell Sonic it had something to due with 'invoked_with' or something.")
+
+                    await msg.delete()
+                    await ctx.send("Moved to The Archives.")
+                else:
+                    await msg.delete()
+                    await ctx.send("I was unable to find The Archives category. Report this to Sonic, this is a glitch.")
 
 def setup(bot):
     bot.add_cog(ModCMDS(bot))

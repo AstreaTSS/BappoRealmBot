@@ -6,7 +6,7 @@ from datetime import datetime
 log = logging.getLogger('authentication')
 log.setLevel(logging.ERROR)
 
-bot = commands.Bot(command_prefix='!?', fetch_offline_members=True)
+bot = commands.Bot(command_prefix='!?', fetch_offline_members=True, case_insensitive=True)
 bot.remove_command("help")
 
 async def error_handle(bot, error, ctx = None):
@@ -28,9 +28,9 @@ async def on_ready():
         bot.gamertags = {}
         bot.pastebins = {}
 
-        cogs_list = ["cogs.events.countdown", "cogs.events.etc", "cogs.cmds.general_cmds", "cogs.events.kick_unverified",
+        cogs_list = ("cogs.events.countdown", "cogs.events.etc", "cogs.cmds.general_cmds", "cogs.events.kick_unverified",
         "cogs.cmds.mod_cmds", "cogs.events.remove_warnings", "cogs.cmds.say_cmds", "cogs.cmds.playerlist", 
-        "cogs.eval_cmd", "cogs.cmds.slow_playerlist"]
+        "cogs.eval_cmd", "cogs.cmds.slow_playerlist")
 
         for cog in cogs_list:
             bot.load_extension(cog)
@@ -42,6 +42,11 @@ async def on_ready():
 
         activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
         await bot.change_presence(activity = activity)
+
+        utcnow = datetime.utcnow()
+        time_format = utcnow.strftime("%x %X UTC")
+
+        await msg_to_owner(bot, f"Connected at {time_format}!")
     else:
         utcnow = datetime.utcnow()
         time_format = utcnow.strftime("%x %X UTC")

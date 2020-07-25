@@ -107,11 +107,8 @@ class Playerlist(commands.Cog):
                 profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
                 users = profiles["profileUsers"]
                 users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
-
+            finally:
                 await xb_client.close()
-            except BaseException:
-                await xb_client.close()
-                raise
 
             def add_list(gamertag, state, last_seen):
                 if state == "InGame":

@@ -92,11 +92,11 @@ class SayCMDS(commands.Cog):
 
         ori = await ctx.send("```\nSetting up...\n```")
 
-        reply = await self.setup_helper(ctx, ori, (
-            "Because of this command's complexity, this command requires a little wizard.\n\n" +
-            "1. If you wish to do so, which channel do you want to send this message to? If you just want to send it in " +
+        reply = await self.setup_helper(ctx, ori, "".join((
+            "Because of this command's complexity, this command requires a little wizard.\n\n",
+            "1. If you wish to do so, which channel do you want to send this message to? If you just want to send it in ",
             "this channel, just say \"skip\"."
-        ))
+        )))
         if reply == None:
             return
         elif reply.content.lower() != "skip":
@@ -106,10 +106,10 @@ class SayCMDS(commands.Cog):
                 await ori.edit(content = "```\nFailed to get channel. Exiting...\n```")
                 return
 
-        reply = await self.setup_helper(ctx, ori, (
-            "2. If you wish to do so, what color, in hex (ex. #000000), would you like the embed to have. Case-insensitive, " +
+        reply = await self.setup_helper(ctx, ori, "".join((
+            "2. If you wish to do so, what color, in hex (ex. #000000), would you like the embed to have. Case-insensitive, ",
             "does not require '#'.\nIf you just want the default color, say \"skip\"."
-        ))
+        )))
         if reply == None:
             return
         elif reply.content.lower() != "skip":
@@ -163,11 +163,11 @@ class SayCMDS(commands.Cog):
 
         ori = await ctx.send("```\nSetting up...\n```")
 
-        reply = await self.setup_helper(ctx, ori, (
-            "Because of this command's complexity, this command requires a little wizard.\n\n" +
-            "1. What channel do you want to send this message in? You can either type out the full " +
+        reply = await self.setup_helper(ctx, ori, "".join((
+            "Because of this command's complexity, this command requires a little wizard.\n\n",
+            "1. What channel do you want to send this message in? You can either type out the full ",
             "name of the channel, the ID of the channel, or the channel mention."
-        ))
+        )))
         if reply == None:
             return
         else:
@@ -203,10 +203,10 @@ class SayCMDS(commands.Cog):
         else:
             content = reply.content
 
-        reply = await self.setup_helper(ctx, ori, (
-            "4. Do you wish to have any files, like images, be sent with the message? If so, send them now." +
+        reply = await self.setup_helper(ctx, ori, "".join((
+            "4. Do you wish to have any files, like images, be sent with the message? If so, send them now.",
             "\nIf you don't want any files, say \"skip\"."
-        ))
+        )))
         if reply == None:
             return
         elif reply.content.lower() != "skip":
