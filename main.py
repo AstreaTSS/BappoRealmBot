@@ -43,15 +43,12 @@ async def on_ready():
         activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
         await bot.change_presence(activity = activity)
 
-        utcnow = datetime.utcnow()
-        time_format = utcnow.strftime("%x %X UTC")
+    utcnow = datetime.utcnow()
+    time_format = utcnow.strftime("%x %X UTC")
 
-        await msg_to_owner(bot, f"Connected at {time_format}!")
-    else:
-        utcnow = datetime.utcnow()
-        time_format = utcnow.strftime("%x %X UTC")
+    connect_str = "Connected" if not bot.init_load else "Reconnected"
 
-        await msg_to_owner(bot, f"Reconnected at {time_format}!")
+    await msg_to_owner(bot, f"{connect_str} at `{time_format}`!")
 
     bot.init_load = False
     
