@@ -146,18 +146,22 @@ class ModCMDS(commands.Cog):
             else:
                 archive_cata = discord.utils.find(ctx.guild.categories, id = 683457443996631117) # archive cate
                 if archive_cata != None:
+                    await msg.delete()
 
                     if ctx.invoked_with.lower() == "archive":
                         await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
-                        reason=f"Moved to The Archives.")
+                        reason=f"Moved to The Archives by {str(ctx.author)}.")
+                        await ctx.send("Moved to The Archives.")
+
                     elif ctx.invoked_with.lower() == "yeet":
                         await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
-                        reason=f"Yeeted to The Archives.")
+                        reason=f"Yeeted to The Archives by {str(ctx.author)}.")
+                        await ctx.send("Yeeted to The Archives.")
+
                     else:
                         await ctx.send("A rare error happened. Tell Sonic it had something to due with 'invoked_with' or something.")
+                        return
 
-                    await msg.delete()
-                    await ctx.send("Moved to The Archives.")
                 else:
                     await msg.delete()
                     await ctx.send("I was unable to find The Archives category. Report this to Sonic, this is a glitch.")
