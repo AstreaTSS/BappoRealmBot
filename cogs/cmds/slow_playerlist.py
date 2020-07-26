@@ -20,8 +20,8 @@ class SlowPlayerlist(commands.Cog):
             await asyncio.sleep(3600)
 
     async def gamertag_handler(self, xuid):
-        if xuid in self.bot.gamertags.keys():
-            return self.bot.gamertags[xuid]
+        if str(xuid) in self.bot.gamertags.keys():
+            return self.bot.gamertags[str(xuid)]
 
         headers = {
             "X-Authorization": os.environ.get("OPENXBL_KEY"),
@@ -45,9 +45,10 @@ class SlowPlayerlist(commands.Cog):
 
                         gamertag = settings["Gamertag"]
 
-                        self.bot.gamertags[xuid] = gamertag
+                        self.bot.gamertags[str(xuid)] = gamertag
                         return gamertag
                 except aiohttp.client_exceptions.ContentTypeError:
+                    print(r.code)
                     return f"User with xuid {xuid}"
     
     async def bappo_club_get(self):
