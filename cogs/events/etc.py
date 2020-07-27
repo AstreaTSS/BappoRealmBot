@@ -33,8 +33,7 @@ class ETC(commands.Cog):
 
         if channel.category != None:
             if channel.category.id == 631591280979214346 and channel.name.startswith("ticket"):
-                everyone_role = channel.guild.default_role
-                await channel.send(f"{everyone_role.mention}")
+                await channel.send(f"@everyone")
 
     @commands.Cog.listener()
     async def on_message(self, mes):
