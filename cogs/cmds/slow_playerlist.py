@@ -8,7 +8,12 @@ class SlowPlayerlist(commands.Cog):
         self.bot.loop.create_task(self.playerlist_loop())
 
     async def playerlist_loop(self):
+        first_run = True
+
         while 1:
+            if not first_run:
+                await asyncio.sleep(3600)
+
             chan = self.bot.get_channel(724355887942074509) # playerlist channel
             list_cmd = self.bot.get_command("slow_playerlist")
 
@@ -17,7 +22,7 @@ class SlowPlayerlist(commands.Cog):
             
             await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
 
-            await asyncio.sleep(3600)
+            first_run = False
 
     async def gamertag_handler(self, xuid):
         if str(xuid) in self.bot.gamertags.keys():
@@ -29,7 +34,7 @@ class SlowPlayerlist(commands.Cog):
             "Accept-Language": "en-US"
         }
 
-        xuid = str(xuid).replace("%27", "")
+        xuid = str(xuid).replace("'", "")
 
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(f"https://xbl.io/api/v2/account/{xuid}") as r:
@@ -48,7 +53,7 @@ class SlowPlayerlist(commands.Cog):
                         self.bot.gamertags[str(xuid)] = gamertag
                         return gamertag
                 except aiohttp.client_exceptions.ContentTypeError:
-                    print(r.code)
+                    print(r.status)
                     return f"User with xuid {xuid}"
     
     async def bappo_club_get(self):
