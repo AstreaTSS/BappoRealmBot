@@ -66,7 +66,7 @@ async def on_command_error(ctx, error):
             await ctx.send("You do not have the proper permissions to use that command.")
     elif isinstance(error, commands.CommandOnCooldown):
         delta_wait = datetime.timedelta(seconds=error.retry_after)
-        await ctx.send(f"You're doing that command too fast! Try again in {humanize.precisedelta(delta_wait, format="%0.0f")}.")
+        await ctx.send(f"You're doing that command too fast! Try again in {humanize.precisedelta(delta_wait, format='%0.0')}.")
     elif isinstance(error, commands.CommandNotFound):
         pass
     else:
