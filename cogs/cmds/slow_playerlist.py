@@ -8,11 +8,9 @@ class SlowPlayerlist(commands.Cog):
         self.bot.loop.create_task(self.playerlist_loop())
 
     async def playerlist_loop(self):
-        first_run = True
-
         while 1:
-            if not first_run:
-                await asyncio.sleep(3600)
+            now = datetime.datetime.utcnow()
+            one_hour_later = now + datetime.timedelta(hours=1)
 
             chan = self.bot.get_channel(724355887942074509) # playerlist channel
             list_cmd = self.bot.get_command("slow_playerlist")
@@ -22,7 +20,7 @@ class SlowPlayerlist(commands.Cog):
             
             await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
 
-            first_run = False
+            await discord.utils.sleep_until(one_hour_later)
 
     async def gamertag_handler(self, xuid):
         if str(xuid) in self.bot.gamertags.keys():
