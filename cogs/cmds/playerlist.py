@@ -1,6 +1,4 @@
 from discord.ext import commands
-from async_lru import alru_cache
-
 import discord, cogs.cmd_checks, asyncio
 import urllib.parse, aiohttp, os, datetime
 
@@ -20,7 +18,6 @@ class Playerlist(commands.Cog):
 
         return users
 
-    @alru_cache(maxsize=32)
     async def try_until_valid(self, xb_client, list_xuids):
         profiles = await xb_client.profile.get_profiles(list_xuids)
         profiles = await profiles.json()
