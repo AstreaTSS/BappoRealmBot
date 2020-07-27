@@ -38,7 +38,7 @@ class Playerlist(commands.Cog):
         return profiles, list_xuids
     
     async def bappo_club_get(self, xb_client):
-        club = await xb_client.club.get_club_user_presence(3379884873194657)
+        club = await xb_client.clubs.get_club_user_presence(3379884873194657)
         resp_json = await club.json()
         return resp_json["clubs"][0]["clubPresence"]
 
