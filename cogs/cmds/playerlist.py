@@ -6,8 +6,6 @@ from xbox.webapi.api.client import XboxLiveClient
 from xbox.webapi.authentication.manager import AuthenticationManager
 from xbox.webapi.common.exceptions import AuthenticationException
 
-from cogs.clubs_handler import ClubsProvider
-
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -19,15 +17,6 @@ class Playerlist(commands.Cog):
                 users.insert(index, "Gamertag not gotten")
 
         return users
-
-    async def auth_mgr_create(self):
-        auth_mgr = await AuthenticationManager.create()
-        auth_mgr.email_address = os.environ.get("XBOX_EMAIL")
-        auth_mgr.password = os.environ.get("XBOX_PASSWORD")
-        await auth_mgr.authenticate()
-        await auth_mgr.close()
-
-        return auth_mgr
 
     async def try_until_valid(self, xb_client, list_xuids):
         profiles = await xb_client.profile.get_profiles(list_xuids)
@@ -49,9 +38,7 @@ class Playerlist(commands.Cog):
         return profiles, list_xuids
     
     async def bappo_club_get(self, xb_client):
-        clubs = ClubsProvider(xb_client)
-
-        club = await clubs.get_club_user_presence(3379884873194657)
+        club = await xb_client.club.get_club_user_presence(3379884873194657)
         resp_json = await club.json()
         return resp_json["clubs"][0]["clubPresence"]
 
@@ -83,32 +70,27 @@ class Playerlist(commands.Cog):
             online_list = []
             offline_list = []
 
-            auth_mgr = await self.auth_mgr_create()
+            async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
+                async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
+                    club_presence = await self.bappo_club_get(xb_client)
 
-            try:
-                xb_client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
+                    for member in club_presence:
+                        last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
+                        if last_seen > time_ago:
+                            xuid_list.append(member["xuid"])
+                            state_list.append(member["lastSeenState"])
+                            last_seen_list.append(last_seen)
+                        else:
+                            break
 
-                club_presence = await self.bappo_club_get(xb_client)
+                    xuid_list_filter = xuid_list.copy()
+                    for xuid in xuid_list_filter:
+                        if xuid in self.bot.gamertags.keys():
+                            xuid_list_filter.remove(xuid)
 
-                for member in club_presence:
-                    last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
-                    if last_seen > time_ago:
-                        xuid_list.append(member["xuid"])
-                        state_list.append(member["lastSeenState"])
-                        last_seen_list.append(last_seen)
-                    else:
-                        break
-
-                xuid_list_filter = xuid_list.copy()
-                for xuid in xuid_list_filter:
-                    if xuid in self.bot.gamertags.keys():
-                        xuid_list_filter.remove(xuid)
-
-                profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
-                users = profiles["profileUsers"]
-                users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
-            finally:
-                await xb_client.close()
+                    profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
+                    users = profiles["profileUsers"]
+                    users = self.get_diff_xuids(users, xuid_list, new_xuid_list)
 
             def add_list(gamertag, state, last_seen):
                 if state == "InGame":
