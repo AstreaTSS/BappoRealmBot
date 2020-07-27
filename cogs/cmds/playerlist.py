@@ -1,4 +1,6 @@
 from discord.ext import commands
+from async_lru import alru_cache
+
 import discord, cogs.cmd_checks, asyncio
 import urllib.parse, aiohttp, os, datetime
 
@@ -18,6 +20,7 @@ class Playerlist(commands.Cog):
 
         return users
 
+    @alru_cache(maxsize=32)
     async def try_until_valid(self, xb_client, list_xuids):
         profiles = await xb_client.profile.get_profiles(list_xuids)
         profiles = await profiles.json()
@@ -85,7 +88,7 @@ class Playerlist(commands.Cog):
 
                     xuid_list_filter = xuid_list.copy()
                     for xuid in xuid_list_filter:
-                        if xuid in self.bot.gamertags.keys():
+                        if str(xuid) in self.bot.gamertags.keys():
                             xuid_list_filter.remove(xuid)
 
                     profiles, new_xuid_list = await self.try_until_valid(xb_client, xuid_list_filter)
@@ -107,8 +110,8 @@ class Playerlist(commands.Cog):
                 gamertag = f"User with xuid {xuid_list[i]}"
 
                 if entry == "Gamertag not gotten":
-                    if xuid_list[i] in self.bot.gamertags.keys():
-                        gamertag = self.bot.gamertags[xuid_list[i]]
+                    if str(xuid_list[i]) in self.bot.gamertags.keys():
+                        gamertag = self.bot.gamertags[str(xuid_list[i])]
                 else:
                     try:
                         settings = {}
@@ -116,7 +119,7 @@ class Playerlist(commands.Cog):
                             settings[setting["id"]] = setting["value"]
 
                         gamertag = settings["Gamertag"]
-                        self.bot.gamertags[xuid_list[i]] = gamertag
+                        self.bot.gamertags[str(xuid_list[i])] = gamertag
                     except KeyError:
                         gamertag = f"User with xuid {xuid_list[i]}"
 
