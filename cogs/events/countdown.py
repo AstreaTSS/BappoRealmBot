@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord, asyncio, aiohttp, humanize
-import datetime, math, cogs.cmd_checks
+import datetime, math, cogs.utils
 
 class CountdownCMD(commands.Cog):
     def __init__(self, bot):
@@ -27,7 +27,7 @@ class CountdownCMD(commands.Cog):
         return embed
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def forcerun_countdown(self, ctx):
         await self.countdown_check(False)
         await ctx.send("Done!")

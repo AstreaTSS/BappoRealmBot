@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks, asyncio
+import discord, cogs.utils, asyncio
 import urllib.parse, aiohttp, os, datetime
 
 from xbox.webapi.api.client import XboxLiveClient
@@ -43,7 +43,7 @@ class Playerlist(commands.Cog):
         return resp_json["clubs"][0]["clubPresence"]
 
     @commands.command(aliases = ["player_list", "get_playerlist", "get_player_list"])
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     @commands.cooldown(1, 60, commands.BucketType.default)
     async def playerlist(self, ctx, **kwargs):
 

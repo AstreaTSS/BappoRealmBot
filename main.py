@@ -1,25 +1,13 @@
-import discord, os
-import logging, traceback
+import discord, os, humanize
+import logging, datetime
 from discord.ext import commands
-from datetime import datetime
+import cogs.utils as utils
 
 log = logging.getLogger('authentication')
 log.setLevel(logging.ERROR)
 
 bot = commands.Bot(command_prefix='!?', fetch_offline_members=True, case_insensitive=True)
 bot.remove_command("help")
-
-async def error_handle(bot, error, ctx = None):
-    error_str = ''.join(traceback.format_exception(etype=type(error), value=error, tb=error.__traceback__))
-    await msg_to_owner(bot, error_str)
-
-    if ctx != None:
-        await ctx.send("An internal error has occured. The owner of the bot has been notified.")
-
-async def msg_to_owner(bot, string):
-    application = await bot.application_info()
-    owner = application.owner
-    await owner.send(f"{string}")
 
 @bot.event
 async def on_ready():
@@ -43,12 +31,12 @@ async def on_ready():
         activity = discord.Activity(name = 'over the Bappo Realm', type = discord.ActivityType.watching)
         await bot.change_presence(activity = activity)
 
-    utcnow = datetime.utcnow()
+    utcnow = datetime.datetime.utcnow()
     time_format = utcnow.strftime("%x %X UTC")
 
     connect_str = "Connected" if bot.init_load else "Reconnected"
 
-    await msg_to_owner(bot, f"{connect_str} at `{time_format}`!")
+    await utils.msg_to_owner(bot, f"{connect_str} at `{time_format}`!")
 
     bot.init_load = False
     
@@ -64,23 +52,25 @@ async def on_error(event, *args, **kwargs):
     try:
         raise
     except Exception as e:
-        await error_handle(bot, e)
+        await utils.error_handle(bot, e)
 
-@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         original = error.original
         if not isinstance(original, discord.HTTPException):
-            await error_handle(bot, error, ctx)
-    elif isinstance(error, (commands.ConversionError, commands.UserInputError, commands.CommandOnCooldown)):
+            await utils.error_handle(bot, error, ctx)
+    elif isinstance(error, (commands.ConversionError, commands.UserInputError)):
         await ctx.send(error)
     elif isinstance(error, commands.CheckFailure):
         if ctx.guild != None:
             await ctx.send("You do not have the proper permissions to use that command.")
+    elif isinstance(error, commands.CommandOnCooldown):
+        delta_wait = datetime.timedelta(seconds=error.retry_after)
+        await ctx.send(f"You're doing that command too fast! Try again in {humanize.precisedelta(delta_wait, format="%0.0f")}.")
     elif isinstance(error, commands.CommandNotFound):
-        return
+        pass
     else:
-        await error_handle(bot, error, ctx)
+        await utils.error_handle(bot, error, ctx)
 
 bot.init_load = True
 bot.run(os.environ.get("MAIN_TOKEN"))

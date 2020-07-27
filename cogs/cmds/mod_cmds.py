@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks, re, asyncio
+import discord, cogs.utils, re, asyncio
 import urllib.parse, aiohttp, os, collections
 
 from xbox.webapi.api.client import XboxLiveClient
@@ -47,7 +47,7 @@ class ModCMDS(commands.Cog):
                 return "OK"
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def season_add(self, ctx, season, message_id: int):
         try:
             ori_mes = await ctx.guild.get_channel(596186025630498846).fetch_message(message_id)
@@ -73,7 +73,7 @@ class ModCMDS(commands.Cog):
             await ctx.send(f"Done! Added {len(season_x_vets)} members!")
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_gatekeeper_or_up)
+    @commands.check(cogs.utils.is_gatekeeper_or_up)
     async def verify(self, ctx, member: discord.Member, force = None):
         to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
 
@@ -116,7 +116,7 @@ class ModCMDS(commands.Cog):
         await ctx.send(f"{member.mention} was verified!")
 
     @commands.command(aliases=["yeet"])
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def archive(self, ctx):
         if ctx.channel.category.id != 677212464965877803:
             await ctx.send("This isn't the Channel Testing Facility!")

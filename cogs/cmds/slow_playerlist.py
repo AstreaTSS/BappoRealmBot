@@ -1,5 +1,5 @@
 from discord.ext import commands, tasks
-import discord, cogs.cmd_checks, asyncio
+import discord, cogs.utils, asyncio
 import urllib.parse, aiohttp, os, datetime
 
 class SlowPlayerlist(commands.Cog):
@@ -66,7 +66,7 @@ class SlowPlayerlist(commands.Cog):
                 return resp_json["clubs"][0]["clubPresence"]
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     @commands.cooldown(1, 150, commands.BucketType.default)
     async def slow_playerlist(self, ctx, **kwargs):
 

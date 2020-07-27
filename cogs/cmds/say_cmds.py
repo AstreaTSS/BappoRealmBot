@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.cmd_checks, re, asyncio
+import discord, cogs.utils, re, asyncio
 
 async def dm_is_mod_or_up(ctx):
     guild = ctx.bot.get_guild(596183975953825792)
@@ -8,7 +8,7 @@ async def dm_is_mod_or_up(ctx):
     owner_role = guild.get_role(596185339018608641)
     second_owner = guild.get_role(641841757121675264)
 
-    guild_member = discord.utils.get(guild.members, id = ctx.author.id)
+    guild_member = guild.get_member(ctx.author.id)
     if guild_member == None:
         return False
 
@@ -25,7 +25,7 @@ class SayCMDS(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def say(self, ctx, *, message):
 
         args = message.split(" ")
@@ -84,7 +84,7 @@ class SayCMDS(commands.Cog):
                 return reply
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def embed_say(self, ctx):
 
         optional_channel = None

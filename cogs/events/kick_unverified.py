@@ -1,5 +1,5 @@
 from discord.ext import commands
-import asyncio, datetime, cogs.cmd_checks
+import asyncio, datetime, cogs.utils
 import discord, math, collections
 
 class KickUnverified(commands.Cog):
@@ -9,7 +9,7 @@ class KickUnverified(commands.Cog):
         self.bot.loop.create_task(self.kick_unverified(True))
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def forcerun_kick_unverified(self, ctx):
         await self.kick_unverified(False)
         await ctx.send("Done!")

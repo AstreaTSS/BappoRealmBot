@@ -1,6 +1,6 @@
 from discord.ext import commands
 import asyncio, datetime, math
-import discord, cogs.cmd_checks
+import discord, cogs.utils
 
 class RemoveWarnings(commands.Cog):
     def __init__(self, bot):
@@ -9,7 +9,7 @@ class RemoveWarnings(commands.Cog):
         self.bot.loop.create_task(self.remove_warnings(True))
 
     @commands.command()
-    @commands.check(cogs.cmd_checks.is_mod_or_up)
+    @commands.check(cogs.utils.is_mod_or_up)
     async def forcerun_remove_warnings(self, ctx):
         await self.remove_warnings(False)
         await ctx.send("Done!")
