@@ -16,8 +16,8 @@ class ModCMDS(commands.Cog):
         async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
             async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
                 profile = await xb_client.profile.get_profile_by_gamertag(mem_gt_url)
-
-        resp_json = await profile.json()
+                resp_json = await profile.json()
+                
         if "code" in resp_json.keys():
             return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`!"
         else:
