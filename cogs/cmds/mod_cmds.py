@@ -10,23 +10,12 @@ class ModCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def auth_mgr_create(self):
-        auth_mgr = await AuthenticationManager.create()
-        auth_mgr.email_address = os.environ.get("XBOX_EMAIL")
-        auth_mgr.password = os.environ.get("XBOX_PASSWORD")
-        await auth_mgr.authenticate()
-        await auth_mgr.close()
-
-        return auth_mgr
-
     async def xbl_handler(self, gamertag, user):
-        auth_mgr = await self.auth_mgr_create()
-
         mem_gt_url = gamertag
 
-        client = await XboxLiveClient.create(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid)
-        profile = await client.profile.get_profile_by_gamertag(mem_gt_url)
-        await client.close()
+        async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
+            async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
+                profile = await xb_client.profile.get_profile_by_gamertag(mem_gt_url)
 
         resp_json = await profile.json()
         if "code" in resp_json.keys():
