@@ -58,6 +58,7 @@ class ModCMDS(commands.Cog):
 
             for vet in season_x_vets:
                 await vet.add_roles(season_x_role)
+                await asyncio.sleep(1)
 
             await ctx.send(f"Done! Added {len(season_x_vets)} members!")
 
