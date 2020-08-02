@@ -63,7 +63,11 @@ class SlowPlayerlist(commands.Cog):
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(f"https://xapi.us/v2/clubs/details/3379884873194657") as r:
                 resp_json = await r.json()
-                return resp_json["clubs"][0]["clubPresence"]
+                try:
+                    return resp_json["clubs"][0]["clubPresence"]
+                except KeyError:
+                    print(resp_json)
+                    return None
 
     @commands.command()
     @commands.check(cogs.utils.is_mod_or_up)
@@ -89,6 +93,10 @@ class SlowPlayerlist(commands.Cog):
             online_list = []
             offline_list = []
             club_presence = await self.bappo_club_get()
+
+            if club_presence == None:
+                await ctx.send("Seems like this command failed somehow. Sonic should have the info needed to see what's going on.")
+                return
 
             for member in club_presence:
                 last_seen = datetime.datetime.strptime(member["lastSeenTimestamp"][:-2], "%Y-%m-%dT%H:%M:%S.%f")
