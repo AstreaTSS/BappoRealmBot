@@ -136,7 +136,7 @@ class ModCMDS(commands.Cog):
             if str(reaction) == "❌":
                 await archive_cancel()
             else:
-                archive_cata = discord.utils.get(ctx.guild.categories, id = 683457443996631117) # archive cate
+                archive_cata = discord.utils.get(ctx.guild.categories, id = 741898424521326594) # archive part 2 cate
                 if archive_cata != None:
                     await msg.delete()
 
