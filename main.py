@@ -57,19 +57,22 @@ async def on_error(event, *args, **kwargs):
     except Exception as e:
         await utils.error_handle(bot, e)
 
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         original = error.original
         if not isinstance(original, discord.HTTPException):
             await utils.error_handle(bot, error, ctx)
-    elif isinstance(error, (commands.ConversionError, commands.UserInputError)):
+    elif isinstance(error, commands.TooManyArguments):
+        await ctx.send("You passed too many arguments to that command! Please make sure you're passing in a valid argument/subcommand.")
+    elif isinstance(error, commands.CommandOnCooldown):
+        delta_wait = datetime.timedelta(seconds=error.retry_after)
+        await ctx.send(f"You're doing that command too fast! Try again in `{humanize.precisedelta(delta_wait, format='%0.0f')}`.")
+    elif isinstance(error, (commands.ConversionError, commands.UserInputError, commands.BadArgument)):
         await ctx.send(error)
     elif isinstance(error, commands.CheckFailure):
         if ctx.guild != None:
             await ctx.send("You do not have the proper permissions to use that command.")
-    elif isinstance(error, commands.CommandOnCooldown):
-        delta_wait = datetime.timedelta(seconds=error.retry_after)
-        await ctx.send(f"You're doing that command too fast! Try again in {humanize.precisedelta(delta_wait, format='%0.0')}.")
     elif isinstance(error, commands.CommandNotFound):
         pass
     else:
