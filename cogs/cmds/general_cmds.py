@@ -2,6 +2,10 @@ from discord.ext import commands
 import discord, re, time, os
 import aiohttp, json, datetime
 
+from xbox.webapi.api.client import XboxLiveClient
+from xbox.webapi.authentication.manager import AuthenticationManager
+from xbox.webapi.common.exceptions import AuthenticationException
+
 class GeneralCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -119,6 +123,54 @@ class GeneralCMDS(commands.Cog):
             )
 
             await ctx.send(embed=stats_embed)
+
+    @commands.command()
+    async def gamertag_from_xuid(self, ctx, xuid: int):
+        if str(xuid) in self.bot.gamertags.keys():
+            await ctx.send(f"Gamertag for `{xuid}`: {self.bot.gamertags[str(xuid)]}")
+        else:
+            async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
+                async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
+                    profile = await xb_client.profile.get_profile_by_xuid(xuid)
+
+                    try:
+                        resp_json = await profile.json()
+                    except aiohttp.ContentTypeError:
+                        await ctx.send(f"ERROR: Unable to find gamertag from XUID `{xuid}`! Make sure you have entered it in correctly.")
+                        return
+
+            if "code" in resp_json.keys():
+                await ctx.send(f"ERROR: Unable to find gamertag from XUID `{xuid}`! Make sure you have entered it in correctly.")
+            else:
+                settings = {}
+                for setting in resp_json["profileUsers"][0]["settings"]:
+                    settings[setting["id"]] = setting["value"]
+                    
+                self.bot.gamertags[str(xuid)] = setting["Gamertag"]
+                await ctx.send(f"Gamertag for `{xuid}`: {setting['Gamertag']}")
+
+    @commands.command()
+    async def xuid_from_gamertag(self, ctx, *, gamertag):
+        if gamertag in self.bot.gamertags.values():
+            xuid = next(e for e in self.bot.gamertags.keys() if self.bot.gamertags[e] == gamertag)
+            await ctx.send(f"XUID of `{gamertag}`: `{xuid}`")
+        else:
+            async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
+                async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
+                    profile = await xb_client.profile.get_profile_by_gamertag(gamertag)
+
+                    try:
+                        resp_json = await profile.json()
+                    except aiohttp.ContentTypeError:
+                        await ctx.send(f"ERROR: Unable to find XUID from gamertag `{gamertag}`! Make sure you have entered it in correctly.")
+                        return
+
+            if "code" in resp_json.keys():
+                await ctx.send(f"ERROR: Unable to find XUID from gamertag `{gamertag}`! Make sure you have entered it in correctly.")
+            else:
+                xuid = resp_json["profileUsers"][0]["id"]
+                self.bot.gamertags[str(xuid)] = gamertag
+                await ctx.send(f"XUID of `{gamertag}`: `{xuid}`")
 
 def setup(bot):
     bot.add_cog(GeneralCMDS(bot))

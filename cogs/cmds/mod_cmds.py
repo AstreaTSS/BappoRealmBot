@@ -10,16 +10,20 @@ class ModCMDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def xbl_handler(self, gamertag, user):
+    async def verify_xbl_handler(self, gamertag, user: discord.Member):
         mem_gt_url = gamertag
 
         async with AuthenticationManager(os.environ.get("XBOX_EMAIL"), os.environ.get("XBOX_PASSWORD")) as auth_mgr:
             async with XboxLiveClient(auth_mgr.userinfo.userhash, auth_mgr.xsts_token.jwt, auth_mgr.userinfo.xuid) as xb_client:
                 profile = await xb_client.profile.get_profile_by_gamertag(mem_gt_url)
-                resp_json = await profile.json()
+
+                try:
+                    resp_json = await profile.json()
+                except aiohttp.ContentTypeError:
+                    return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`! Make sure it is spelled and entered in correctly!"
                 
         if "code" in resp_json.keys():
-            return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`!"
+            return f"ERROR: Unable to find {user.mention}'s gamertag, `{gamertag}`! Make sure it is spelled and entered in correctly!"
         else:
             settings = {}
             for setting in resp_json["profileUsers"][0]["settings"]:
@@ -64,35 +68,42 @@ class ModCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.utils.is_gatekeeper_or_up)
-    async def verify(self, ctx, member: discord.Member, force = None):
+    async def verify(self, ctx, member: discord.Member, *args):
+        force = False
+        member_gamertag = ""
+
         to_be_verified = discord.utils.get(ctx.guild.roles, name='To Be Verified')
 
         if not to_be_verified in member.roles:
             await ctx.send("This user is already verified!")
             return
 
-        if force != None:
-            if force.lower() != "-f":
-                await ctx.send("Invalid parameter!")
-                return
+        if args != []:
+            if args[0].lower() == "-f":
+                force = True
+            elif args[0].lower() == "-g":
+                member_gamertag = args[1]
+            else:
+                await ctx.send("That's not a valid argument! There are only two so far, `-f` and `-g`. Please consult to " +
+                "the help command to see how to use those.")
 
-        if force == None:
+        if not force:
             force_txt = "To bypass this check, add '-f' to the end of the command (ex: `!?verify @User#1234 -f`)."
 
             async with ctx.channel.typing():
-                gamertags = discord.utils.get(member.guild.channels, name='gamertags')
-                mem_gt_msg = None
+                if member_gamertag == None:
+                    gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
-                async for message in gamertags.history():
-                    if message.author.id == member.id:
-                        mem_gt_msg = message
-                        break
-                
-                if mem_gt_msg == None:
-                    await ctx.send(f"ERROR: Could not user's gamertag in {gamertags.mention}!\n{force_txt}")
-                    return
+                    async for message in gamertags.history():
+                        if message.author.id == member.id:
+                            member_gamertag = message.content
+                            break
+                    
+                    if member_gamertag == "":
+                        await ctx.send(f"ERROR: Could not user's gamertag in {gamertags.mention}!\n{force_txt}")
+                        return
 
-                status = await self.xbl_handler(mem_gt_msg.content, member)
+                status = await self.verify_xbl_handler(member_gamertag, member)
 
                 if status != "OK":
                     await ctx.send(f"{status}\n{force_txt}")
@@ -145,9 +156,13 @@ class ModCMDS(commands.Cog):
                     if ctx.invoked_with.lower() == "yeet":
                         action = "Yeeted"
 
-                    await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
-                        reason=f"{action} to The Archives by {str(ctx.author)}.")
-                    await ctx.send(f"{action} to The Archives.")
+                    try:
+                        await ctx.channel.edit(category=archive_cata, position=0, sync_permissions=True, 
+                            reason=f"{action} to The Archives by {str(ctx.author)}.")
+                        await ctx.send(f"{action} to The Archives.")
+                        
+                    except discord.HTTPException as e:
+                        await ctx.send(f"Seems like something went wrong. Here's the error: {e}")
 
                 else:
                     await msg.delete()
