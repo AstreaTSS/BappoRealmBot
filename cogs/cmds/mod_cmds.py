@@ -78,7 +78,7 @@ class ModCMDS(commands.Cog):
             await ctx.send("This user is already verified!")
             return
 
-        if args != []:
+        if args:
             if args[0].lower() == "-f":
                 force = True
             elif args[0].lower() == "-g":
@@ -86,6 +86,7 @@ class ModCMDS(commands.Cog):
             else:
                 await ctx.send("That's not a valid argument! There are only two so far, `-f` and `-g`. Please consult to " +
                 "the help command to see how to use those.")
+                return
 
         if not force:
             force_txt = "To bypass this check, add '-f' to the end of the command (ex: `!?verify @User#1234 -f`)."
