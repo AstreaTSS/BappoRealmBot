@@ -146,8 +146,8 @@ class GeneralCMDS(commands.Cog):
                 for setting in resp_json["profileUsers"][0]["settings"]:
                     settings[setting["id"]] = setting["value"]
                     
-                self.bot.gamertags[str(xuid)] = setting["Gamertag"]
-                await ctx.send(f"Gamertag for `{xuid}`: {setting['Gamertag']}")
+                self.bot.gamertags[str(xuid)] = settings["Gamertag"]
+                await ctx.send(f"Gamertag for `{xuid}`: {settings['Gamertag']}")
 
     @commands.command()
     async def xuid_from_gamertag(self, ctx, *, gamertag):
