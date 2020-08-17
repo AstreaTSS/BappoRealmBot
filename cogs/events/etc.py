@@ -36,12 +36,13 @@ class ETC(commands.Cog):
                 await channel.send(f"@everyone")
 
     @commands.Cog.listener()
-    async def on_message(self, mes):
+    async def on_message(self, mes: discord.Message):
         if mes.guild == None:
             return
             
         rand_chance = random.randint(1, 4999)
         if rand_chance == 49:
+            print(f"Added pineapple reaction to {mes.jump_url}")
             await mes.add_reaction("🍍")
 def setup(bot):
     bot.add_cog(ETC(bot))
