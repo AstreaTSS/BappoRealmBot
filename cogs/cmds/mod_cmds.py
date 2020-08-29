@@ -89,10 +89,10 @@ class ModCMDS(commands.Cog):
                 return
 
         if not force:
-            force_txt = "To bypass this check, add '-f' to the end of the command (ex: `!?verify @User#1234 -f`)."
+            force_txt = "To bypass this check, add '-f' to the end of the command (ex: !?verify @User#1234 -f)."
 
             async with ctx.channel.typing():
-                if member_gamertag == None:
+                if member_gamertag == "":
                     gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
                     async for message in gamertags.history():
