@@ -9,6 +9,22 @@ from xbox.webapi.common.exceptions import AuthenticationException
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.bot.loop.create_task(self.playerlist_loop())
+
+    async def playerlist_loop(self):
+        while 1:
+            now = datetime.datetime.utcnow()
+            one_hour_later = now + datetime.timedelta(hours=1)
+
+            chan = self.bot.get_channel(724355887942074509) # playerlist channel
+            list_cmd = self.bot.get_command("playerlist")
+
+            mes = await chan.fetch_message(724364574538858647) # a message in #playerlist
+            a_ctx = await self.bot.get_context(mes)
+            
+            await a_ctx.invoke(list_cmd, limited=True, no_init_mes=True)
+
+            await discord.utils.sleep_until(one_hour_later)
 
     def get_diff_xuids(self, users, list_xuids, new_list_xuids):
         for xuid in list_xuids:
