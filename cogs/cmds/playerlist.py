@@ -9,7 +9,7 @@ from xbox.webapi.common.exceptions import AuthenticationException
 class Playerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.loop.create_task(self.playerlist_loop())
+        # self.bot.loop.create_task(self.playerlist_loop())
 
     async def playerlist_loop(self):
         while 1:
