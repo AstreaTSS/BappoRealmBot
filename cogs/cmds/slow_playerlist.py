@@ -5,7 +5,7 @@ import urllib.parse, aiohttp, os, datetime
 class SlowPlayerlist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # self.bot.loop.create_task(self.playerlist_loop())
+        self.bot.loop.create_task(self.playerlist_loop())
 
     async def playerlist_loop(self):
         while 1:
