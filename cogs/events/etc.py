@@ -14,15 +14,19 @@ class ETC(commands.Cog):
             gamertags = discord.utils.get(member.guild.channels, name='gamertags')
 
             verify_start = "".join((f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have ",
-            "noticed that there's not a lot of channels. Well, that's because you have to be verified. ",
-            f"To get verified, answer the below questions **and** put your gamertag in {gamertags.mention}.\n",
+            "noticed that there's not a lot of channels. Well, that's because you have to be verified.\n\n",
+            f"To get verified, **answer the below questions in this channel and put your gamertag in {gamertags.mention}.**\n",
             f"A {gatekeeper.mention} will then verify you, but this is a manual process, so it might take a while.\n\n"))
 
             verify_questions = "".join(("```\nVerification Questions:\n\n",
-            "1. How did you find this Realm?\n\n",
-            "2. Roughly how long have you been playing Minecraft? (Please be more specific than just 'for years'.)\n\n",
-            "3. What platform/device do you play on?\n\n",
-            "4. What is RULE 3 of this server?\n```"))
+            "1. How did you come to know about this Realm? Don't just say 'advertising' if that's true " +
+            "for you; be more specific, like stating from where.\n\n",
+            "2. Roughly how long have you been playing Minecraft? If you've been playing Minecraft for a while, " +
+            "what's your favorite part about Minecraft?\n\n",
+            "3. Have you ever been a problem in Minecraft or Discord? If so, why?\n\n"
+            "4. What platform/device(s) do you play on?\n\n",
+            "5. Why did you join this Realm and what do you look forward to doing here?\n\n"
+            "6. What is RULE 3 (not question 3) of this server?\n```"))
 
             await verify_channel.send(verify_start + verify_questions)
 
