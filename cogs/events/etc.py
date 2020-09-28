@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord, random
+import cogs.utils as utils
 
 class ETC(commands.Cog):
     def __init__(self, bot):
@@ -46,7 +47,7 @@ class ETC(commands.Cog):
             
         rand_chance = random.randint(1, 4999)
         if rand_chance == 49:
-            print(f"Added pineapple reaction to {mes.jump_url}")
+            utils.msg_to_owner(self.bot, f"Added pineapple reaction to {mes.jump_url}")
             await mes.add_reaction("🍍")
 def setup(bot):
     bot.add_cog(ETC(bot))

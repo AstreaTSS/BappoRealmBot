@@ -1,3 +1,4 @@
 discord
+flask
 git+https://github.com/Sonic4999/xbox-webapi-python.git@aiohttp
 git+https://github.com/jmoiron/humanize.git
