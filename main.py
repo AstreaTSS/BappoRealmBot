@@ -3,7 +3,7 @@ import logging, datetime
 from discord.ext import commands
 import cogs.utils as utils
 
-from keep_alive import keep_alive
+# from keep_alive import keep_alive
 
 log = logging.getLogger('authentication')
 log.setLevel(logging.ERROR)
@@ -80,6 +80,6 @@ async def on_command_error(ctx, error):
     else:
         await utils.error_handle(bot, error, ctx)
 
-keep_alive()
+# keep_alive()
 bot.init_load = True
 bot.run(os.environ.get("MAIN_TOKEN"))
