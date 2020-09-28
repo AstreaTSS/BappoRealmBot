@@ -22,12 +22,13 @@ class ETC(commands.Cog):
             verify_questions = "".join(("```\nVerification Questions:\n\n",
             "1. How did you come to know about this Realm? Don't just say 'advertising' if that's true " +
             "for you; be more specific, like stating from where.\n\n",
-            "2. Roughly how long have you been playing Minecraft? If you've been playing Minecraft for a while, " +
-            "what's your favorite part about Minecraft?\n\n",
-            "3. Have you ever been a problem in Minecraft or Discord? If so, why?\n\n"
-            "4. What platform/device(s) do you play on?\n\n",
-            "5. Why did you join this Realm and what do you look forward to doing here?\n\n"
-            "6. What is RULE 3 (not question 3) of this server?\n```"))
+            "2. Roughly how long have you been playing Minecraft?\n\n",
+            "3. If you've been playing Minecraft for a while, what's your favorite part about " +
+            "Minecraft? If you're new to Minecraft, why did you get it?\n\n",
+            "4. Have you ever been a problem in Minecraft or Discord? If so, why?\n\n"
+            "5. What platform/device(s) do you play on?\n\n",
+            "6. Why did you join this Realm and what do you look forward to doing here?\n\n"
+            "7. What is RULE 3 (not question 3) of this server?\n```"))
 
             await verify_channel.send(verify_start + verify_questions)
 
