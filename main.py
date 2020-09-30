@@ -8,7 +8,9 @@ from keep_alive import keep_alive
 log = logging.getLogger('authentication')
 log.setLevel(logging.ERROR)
 
-bot = commands.Bot(command_prefix='!?', fetch_offline_members=True, case_insensitive=True)
+# we're going to use all intents for laziness purposes
+# we could reasonably turn some of these off, but this bot is too small to really matter much
+bot = commands.Bot(command_prefix='!?', fetch_offline_members=True, case_insensitive=True, intents=discord.Intents.all())
 bot.remove_command("help")
 
 @bot.event
