@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, cogs.utils, re, asyncio
+import discord, cogs.utils, re, asyncio, typing
 import urllib.parse, aiohttp, os, collections
 
 from xbox.webapi.api.client import XboxLiveClient
@@ -41,19 +41,25 @@ class ModCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.utils.is_mod_or_up)
-    async def season_add(self, ctx, season, message_id: int):
-        try:
-            ori_mes = await ctx.guild.get_channel(596186025630498846).fetch_message(message_id)
-        except discord.NotFound:
-            await ctx.send("Invalid message ID! Make sure the message itself is in announcements!")
-        ori_timestamp = ori_mes.created_at.timestamp()
+    async def season_add(self, ctx, season, message_id = typing.Optional[int]):
+
+        if message_id != None:
+            try:
+                ori_mes = await ctx.guild.get_channel(596186025630498846).fetch_message(message_id)
+            except discord.NotFound:
+                await ctx.send("Invalid message ID! Make sure the message itself is in announcements!")
+            ori_timestamp = ori_mes.created_at.timestamp()
+        else:
+            ori_timestamp = ctx.message.created_at.timestamp()
 
         guild_members = ctx.guild.members
-
         season_x_role = discord.utils.get(ctx.guild.roles, name=f'S{season}')
+
         if season_x_role == None:
             await ctx.send("Invalid season number!")
         else:
+            await ctx.send(f"Starting process for S{season}.")
+
             season_x_vets = collections.deque()
 
             for member in guild_members:
