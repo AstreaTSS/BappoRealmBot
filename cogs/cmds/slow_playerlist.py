@@ -54,12 +54,12 @@ class SlowPlayerlist(commands.Cog):
     
     async def bappo_club_get(self):
         headers = {
-            "X-Auth": os.environ.get("XAPI_KEY"),
-            "Content-Type": "application/json",
+            "X-Authorization": os.environ.get("OPENXBL_KEY"),
+            "Accept": "application/json",
             "Accept-Language": "en-US"
         }
         async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.get(f"https://xapi.us/v2/clubs/details/3379884873194657") as r:
+            async with session.get("https://xbl.io/api/v2/clubs/3379884873194657") as r:
                 resp_json = await r.json()
                 try:
                     return resp_json["clubs"][0]["clubPresence"]
