@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord, random
+import discord, random, datetime, pytz
 import cogs.utils as utils
 
 class ETC(commands.Cog):
@@ -16,7 +16,7 @@ class ETC(commands.Cog):
 
             verify_start = "".join((f"Welcome to the Bappo Realm, {member.mention}!\n\nYou might have ",
             "noticed that there's not a lot of channels. Well, that's because you have to be verified.\n\n",
-            f"To get verified, **answer the below questions in this channel and put your gamertag in {gamertags.mention}.**\n",
+            f"To get verified, **answer the below questions in this channel and put your Microsoft Gamertag in {gamertags.mention}.**\n",
             f"A {gatekeeper.mention} will then verify you, but this is a manual process, so it might take a while.\n\n"))
 
             verify_questions = "".join(("```\nVerification Questions:\n\n",
@@ -31,6 +31,18 @@ class ETC(commands.Cog):
             "7. What is RULE 3 (not question 3) of this server?\n```"))
 
             await verify_channel.send(verify_start + verify_questions)
+
+            et = pytz.timezone("US/Eastern")
+            now = datetime.datetime.now(et)
+            if 0 <= now.hour < 8: # if between 12 AM and 8 AM
+                late_embed = discord.Embed(
+                    type="rich", 
+                    title="Warning",
+                    description=("You seem to have joined during a time where all of the mods are usually asleep. " +
+                    "Please wait; a mod will verify you around 8 AM ET in the worst case scenario."),
+                    color=discord.Color.red()
+                )
+                await verify_channel.send(embed=late_embed)
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):

@@ -41,7 +41,7 @@ class ModCMDS(commands.Cog):
 
     @commands.command()
     @commands.check(cogs.utils.is_mod_or_up)
-    async def season_add(self, ctx, season, message_id = typing.Optional[int]):
+    async def season_add(self, ctx, season, message_id: typing.Optional[int]):
 
         if message_id != None:
             try:
