@@ -34,7 +34,7 @@ class ETC(commands.Cog):
 
             et = pytz.timezone("US/Eastern")
             now = datetime.datetime.now(et)
-            if 0 <= now.hour < 8 or now.hour == 11: # if between 11 PM and 8 AM ET
+            if 0 <= now.hour < 8 or now.hour == 23: # if between 11 PM and 8 AM ET
                 late_embed = discord.Embed(
                     type="rich", 
                     title="Warning",
