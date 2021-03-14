@@ -1,3 +1,5 @@
+# Goodbye, Bappo Realm. You shall be missed. This will live on through the [Generic Realm Bot](https://github.com/Sonic4999/GenericRealmBot).
+
 # Bappo Realm Bot
 
 ![Bappo Realm Bot Logo](https://cdn.discordapp.com/avatars/618993974048194560/9533dc8ab73566f714731f17ed90d913.png?size=256)
